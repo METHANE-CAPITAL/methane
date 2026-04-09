@@ -8,6 +8,7 @@ import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
+import { PumpFunIcon, DexScreenerIcon, DriftIcon, XIcon } from '@/components/NavIcons';
 
 // Scroll reveal
 function useScrollReveal() {
@@ -38,11 +39,19 @@ export default function Home() {
           <span className="status-dot" />
           <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
         </div>
-        <div className="flex items-center gap-5">
-          {['pump.fun', 'dexscreener', 'drift', 'twitter'].map(l => (
-            <a key={l} href={l === 'drift' ? 'https://app.drift.trade/perpetuals/FART-PERP' : '#'}
-               target={l === 'drift' ? '_blank' : undefined} rel={l === 'drift' ? 'noopener' : undefined}
-               className="trace-link" style={{ color: 'var(--fg-dark)', letterSpacing: '0.08em' }}>{l}</a>
+        <div className="flex items-center gap-4">
+          {[
+            { label: 'pump.fun', href: '#', Icon: PumpFunIcon },
+            { label: 'dexscreener', href: '#', Icon: DexScreenerIcon },
+            { label: 'drift', href: 'https://app.drift.trade/perpetuals/FART-PERP', Icon: DriftIcon },
+            { label: 'x', href: '#', Icon: XIcon },
+          ].map(l => (
+            <a key={l.label} href={l.href}
+               target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
+               className="trace-link" style={{ color: 'var(--fg-dark)', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 5, border: 'none' }}>
+              <l.Icon size={13} />
+              <span className="hide-mobile">{l.label}</span>
+            </a>
           ))}
         </div>
       </nav>
@@ -73,7 +82,7 @@ export default function Home() {
 
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div className="hide-mobile" style={{ marginBottom: 20 }}>
-          <FartPerpsAscii className="text-[8px] sm:text-[9px] md:text-[11px]" style={{ color: 'var(--fg-dark)' }} />
+          <FartPerpsAscii className="text-[8px] sm:text-[9px] md:text-[11px]" style={{ color: 'var(--fg)' }} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="grid-responsive">
