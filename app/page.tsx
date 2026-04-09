@@ -72,10 +72,12 @@ export default function Home() {
             $METHANE
           </h1>
           <p className="mt-2 text-base md:text-lg font-display font-bold text-gas/70">
-            Every buy rips a bigger FART long
+            Gas Pipeline as a Service
           </p>
           <p className="mt-2 text-sm text-stink/30 max-w-md mx-auto">
-            Creator fees → USDC → <span className="text-stink">5x FART-PERP long</span> on Drift. Public. Verifiable. Autonomous.
+            FART treasury infrastructure for the Solana ecosystem.
+            Creator fees → USDC → <span className="text-stink">5x leveraged FART-PERP long</span> on Drift.
+            Any token can plug in.
           </p>
           <div className="inline-block gas-border px-4 py-2 mt-4">
             <div className="text-[8px] font-mono text-stink/20 mb-0.5">CA</div>
@@ -127,6 +129,78 @@ export default function Home() {
       <section className="relative z-10 py-8">
         <div className="max-w-[1100px] mx-auto px-6">
           <PositionDashboard />
+        </div>
+      </section>
+
+      <StinkDivider />
+
+      {/* GPaaS — THE PITCH */}
+      <section className="relative z-10 py-12">
+        <div className="max-w-[1100px] mx-auto px-6">
+          <h2 className="font-bungee text-xl md:text-2xl text-stink mb-2">Gas Pipeline as a Service</h2>
+          <p className="text-sm text-stink/30 mb-6 max-w-xl">
+            Any token on Solana can plug into the METHANE pipeline. Route your creator fees into the shared FART vault. No code required.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              {
+                title: 'CONNECT',
+                Icon: GasCloudIcon,
+                items: ['Register your creator wallet', 'Set fee routing percentage', 'Choose your allocation split'],
+              },
+              {
+                title: 'PIPELINE',
+                Icon: RecycleIcon,
+                items: ['Auto-claim your creator fees', 'Jupiter swap → USDC', 'Deposit to shared Drift Vault'],
+              },
+              {
+                title: 'EARN',
+                Icon: ChartUpIcon,
+                items: ['Proportional FART-PERP exposure', 'Live PnL dashboard + widget', 'Share of vault profits'],
+              },
+            ].map((card, i) => (
+              <div key={i} className="gas-border">
+                <div className="px-4 py-2.5 border-b border-stink/5 flex items-center gap-2">
+                  <card.Icon size={14} className="text-stink/40" />
+                  <span className="font-bungee text-[10px] text-stink">{card.title}</span>
+                </div>
+                <div className="px-4 py-3 space-y-1">
+                  {card.items.map((item, j) => (
+                    <div key={j} className="flex items-start gap-1.5">
+                      <span className="text-stink/10 text-[8px] mt-[3px]">{j + 1}.</span>
+                      <span className="text-[10px] font-mono text-stink/30">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vault stats placeholder */}
+          <div className="gas-border">
+            <div className="px-5 py-2.5 border-b border-stink/8 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <LiveDot />
+                <span className="font-bungee text-xs text-stink/60">SHARED VAULT</span>
+                <span className="text-[9px] font-mono text-stink/15">DRIFT VAULT · FART-PERP</span>
+              </div>
+              <span className="px-2 py-0.5 text-[9px] font-mono border border-stink/15 text-stink/30">LAUNCHING SOON</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4">
+              {[
+                { label: 'PARTNERS', value: '0', color: '#7CFC00' },
+                { label: 'VAULT TVL', value: '$0', color: '#ADFF2F' },
+                { label: 'VAULT PnL', value: '—', color: '#7CFC00' },
+                { label: 'TOTAL FEES ROUTED', value: '0 SOL', color: '#C49B2F' },
+              ].map((s, i) => (
+                <div key={i} className="px-4 py-3.5 border-r border-stink/5 last:border-r-0">
+                  <div className="text-[9px] font-mono text-stink/20 mb-1">{s.label}</div>
+                  <div className="text-lg font-mono font-bold" style={{ color: s.color }}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
