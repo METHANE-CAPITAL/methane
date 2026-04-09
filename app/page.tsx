@@ -8,7 +8,7 @@ import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
-import { PumpFunIcon, DexScreenerIcon, DriftIcon, XIcon } from '@/components/NavIcons';
+
 
 // Scroll reveal
 function useScrollReveal() {
@@ -39,17 +39,19 @@ export default function Home() {
           <span className="status-dot" />
           <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           {[
-            { label: 'pump.fun', href: '#', Icon: PumpFunIcon },
-            { label: 'dexscreener', href: '#', Icon: DexScreenerIcon },
-            { label: 'drift', href: 'https://app.drift.trade/perpetuals/FART-PERP', Icon: DriftIcon },
-            { label: 'x', href: '#', Icon: XIcon },
+            { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
+            { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
+            { label: 'drift', href: 'https://app.drift.trade/perpetuals/FART-PERP', icon: '/icons/drift.png' },
+            { label: 'x', href: '#', icon: '/icons/x.png' },
           ].map(l => (
             <a key={l.label} href={l.href}
                target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
-               className="trace-link" style={{ color: 'var(--fg-dark)', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 5, border: 'none' }}>
-              <l.Icon size={13} />
+               style={{ color: 'var(--fg-dim)', fontSize: 10, letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', transition: 'color 0.2s' }}
+               onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+               onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
+              <img src={l.icon} alt={l.label} width={16} height={16} style={{ borderRadius: 3 }} />
               <span className="hide-mobile">{l.label}</span>
             </a>
           ))}
