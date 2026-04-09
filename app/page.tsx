@@ -41,7 +41,7 @@ export default function Home() {
           {[
             { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
             { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
-            { label: 'drift', href: 'https://app.drift.trade/perpetuals/FART-PERP', icon: '/icons/drift.png' },
+            { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/drift.png' },
           ].map(l => (
             <a key={l.label} href={l.href}
                target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
@@ -98,7 +98,7 @@ export default function Home() {
             </p>
             <p style={{ fontSize: 13, color: 'var(--fg-dim)', lineHeight: 1.7, marginBottom: 12 }}>
               We built $METHANE to fix that. It&apos;s a set of open-source tools that let <span style={{ color: 'var(--white)', fontWeight: 600 }}>any token on Solana</span> turn
-              their idle creator fees into leveraged Fartcoin exposure through Drift Protocol.
+              their idle creator fees into leveraged Fartcoin exposure through Lavarage.
             </p>
             <p style={{ fontSize: 13, color: 'var(--fg-dim)', lineHeight: 1.7 }}>
               We&apos;re not here to extract. We&apos;re here to give projects tools that actually work —
@@ -113,7 +113,7 @@ export default function Home() {
               <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>WHAT YOU GET</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12 }}>
                 {[
-                  ['your own Drift vault', 'isolated position, your PnL'],
+                  ['your own leveraged vault', 'isolated position, your PnL'],
                   ['autonomous pipeline', 'claims, swaps, deposits every 15 min'],
                   ['5× FART leverage', '$100 fees → $500 notional position'],
                   ['on-chain & verifiable', 'every tx public on Solscan'],
@@ -132,8 +132,8 @@ export default function Home() {
               <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>BE AWARE</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: 'var(--fg-dim)' }}>
                 <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Leverage amplifies losses too — 5× means a 20% FART drop could liquidate</div>
-                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Funding rates on Drift can be negative — costs money to hold a long</div>
-                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Smart contract risk exists on Drift, Jupiter, and our pipeline</div>
+                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Borrowing costs (APR) apply — you pay interest on the leveraged portion</div>
+                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Smart contract risk exists on Lavarage, Jupiter, and our pipeline</div>
                 <div><span style={{ color: 'var(--fg-dark)', marginRight: 6 }}>›</span>Liquidation recovery is built in — agent re-enters at lower leverage after cooldown</div>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function Home() {
               <div style={{ display: 'flex', gap: 16, fontSize: 11, flexWrap: 'wrap' }}>
                 <a href="https://dexscreener.com/solana/9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump" target="_blank" rel="noopener" className="trace-link">dexscreener ↗</a>
                 <a href="https://www.coingecko.com/en/coins/fartcoin" target="_blank" rel="noopener" className="trace-link">coingecko ↗</a>
-                <a href="https://app.drift.trade/perpetuals/FART-PERP" target="_blank" rel="noopener" className="trace-link">fart-perp ↗</a>
+                <a href="https://lavarage.xyz" target="_blank" rel="noopener" className="trace-link">lavarage ↗</a>
                 <a href="https://truthterminal.wiki/" target="_blank" rel="noopener" className="trace-link">truth terminal ↗</a>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Your token. Your vault. Your upside.</h2>
         <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 580 }}>
-          We don&apos;t pool your fees with everyone else. Each project gets a dedicated Drift vault —
+          We don&apos;t pool your fees with everyone else. Each project gets a dedicated leveraged vault —
           your own isolated position with your own entry price and PnL. The tools are open. The code is public. You can verify every transaction.
         </p>
 
@@ -173,7 +173,7 @@ export default function Home() {
             </svg>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>YOUR VAULT</div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              Each project gets a dedicated Drift vault. Your fees → your position.
+              Each project gets a dedicated leveraged vault. Your fees → your position.
               Isolated from every other project. Your own entry price, your own PnL.
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function Home() {
             </svg>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>AUTONOMOUS</div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              The agent runs every 15 minutes. Claims fees, swaps to USDC, deposits to Drift,
+              The agent runs every 15 minutes. Claims fees, deposits SOL collateral to Lavarage,
               opens or increases your FART long. No manual steps. Ever.
             </p>
           </div>
@@ -208,13 +208,12 @@ export default function Home() {
         {/* Pipeline steps */}
         <div style={{ marginTop: 24 }}>
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 12 }}>THE PIPELINE — EVERY 15 MINUTES</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }} className="grid-responsive">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }} className="grid-responsive">
             {[
               { title: 'COLLECT', lines: ['claim', 'creator', 'fees'] },
-              { title: 'SWAP', lines: ['jupiter', 'SOL →', 'USDC'] },
               { title: 'SPLIT', lines: ['70/30', 'long /', 'burn'] },
-              { title: 'DEPOSIT', lines: ['drift', 'deposit', 'USDC'] },
-              { title: 'LONG', lines: ['FART-', 'PERP', '5×'] },
+              { title: 'LEVERAGE', lines: ['lavarage', 'SOL →', '5× FART'] },
+              { title: 'HOLD', lines: ['real', 'FART', 'tokens'] },
             ].map((step, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
                 <div className="panel" style={{ padding: '16px 14px', flex: 1, textAlign: 'center' }}>
@@ -223,7 +222,7 @@ export default function Home() {
                     <div key={j} style={{ fontSize: 10, color: 'var(--fg-dark)', lineHeight: 1.5 }}>{l}</div>
                   ))}
                 </div>
-                {i < 4 && <span style={{ color: 'var(--fg-dark)', fontSize: 12, padding: '0 4px', flexShrink: 0 }}>→</span>}
+                {i < 3 && <span style={{ color: 'var(--fg-dark)', fontSize: 12, padding: '0 4px', flexShrink: 0 }}>→</span>}
               </div>
             ))}
           </div>
@@ -298,16 +297,16 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-responsive">
           {[
-            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'market: FART-PERP #71', 'oracle: pyth lazer #182'],
-              detail: 'The core loop that powers everything. Every 15 minutes, the agent checks your creator fee wallet. If there\'s at least 0.05 SOL worth of fees, it claims them, swaps to USDC via Jupiter, deposits into your Drift vault, and opens or increases your FART-PERP long position. Fully autonomous — no manual intervention needed.' },
+            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'venue: lavarage', 'collateral: SOL'],
+              detail: 'The core loop that powers everything. Every 15 minutes, the agent checks your creator fee wallet. If there\'s at least 0.05 SOL worth of fees, it claims them, uses the SOL as collateral on Lavarage to open a leveraged long — borrowing more SOL and buying real FART tokens on-chain. Fully autonomous — no manual intervention needed.' },
             { name: 'burn_on_rip', desc: 'Deflationary on profit', specs: ['trigger: +15% unrealized PnL', 'burn: 0.5% total supply', 'source: 30% buyback alloc', 'dest: solana null address', 'freq: per take-profit'],
               detail: 'When FART pumps and your vault hits +15% unrealized PnL, the agent takes profit on a portion and uses the 30% buyback allocation to buy $METHANE tokens and send them to the Solana null address — permanently removing them from supply. The more FART pumps, the more $METHANE gets burned.' },
             { name: 'the_blowoff', desc: 'Profit distribution', specs: ['milestones: 2×, 5×, 10× PnL', 'payout: 30% realized gains', 'eligible: top 500 holders', 'snapshot: on milestone block', 'delivery: direct SPL transfer'],
               detail: 'At major PnL milestones (2×, 5×, 10×), the agent realizes 30% of gains and distributes them directly to the top 500 $METHANE holders via SPL token transfer. A snapshot is taken at the milestone block to determine eligibility. Bigger bag = bigger share. Rewards for holding through the run.' },
             { name: 'critical_mass', desc: 'Governance scaling', specs: ['$100K MC → 3× vote', '$500K MC → 5× vote', '$1M MC → 7× vote', 'governance: SPL Realms', 'execution: 24h quorum'],
               detail: 'As $METHANE grows, governance power scales up. At $100K market cap, each token gets 3× voting weight. At $1M, 7×. This means early holders who believe in the project get outsized governance influence. Proposals go through SPL Realms with a 24-hour quorum period. Community decides leverage levels, fee splits, and new mechanics.' },
-            { name: 'composting', desc: 'Yield from funding', specs: ['funding: hourly on drift', 'positive → compounds', 'negative → from collateral', 'staker yield: 50% net', 'claim: permissionless'],
-              detail: 'Drift perpetuals have hourly funding rates. When funding is positive (shorts pay longs), your vault earns yield that compounds automatically into the position. When funding is negative, it comes from your collateral — this is a real cost of holding a leveraged long. Net positive funding gets split 50/50 between vault growth and claimable yield.' },
+            { name: 'composting', desc: 'Yield from funding', specs: ['interest: on borrowed SOL', 'positive → compounds', 'negative → from collateral', 'staker yield: 50% net', 'claim: permissionless'],
+              detail: 'Lavarage charges interest on the borrowed portion of your position (currently ~99% APR). This is the cost of leverage. When FART goes up, your gains outpace the interest. When it goes sideways, interest eats into your collateral. The agent monitors this and will close positions if the cost exceeds projected returns.' },
             { name: 'chain_reaction', desc: 'Liquidation recovery', specs: ['liquidation → 1h cooldown', 're-entry: market order', 'uses: remaining + new fees', 'reset leverage: 3×', 'community vote to escalate'],
               detail: 'If FART drops hard enough to liquidate the position, the agent doesn\'t panic. It waits 1 hour for volatility to settle, then re-enters with whatever collateral remains plus any new fees that came in during cooldown. Re-entry uses 3× leverage (lower than the normal 5×) for safety. Community can vote to increase leverage back up once conditions stabilize.' },
           ].map((m, i) => (
@@ -375,7 +374,7 @@ export default function Home() {
       <footer style={{ borderTop: '1px solid var(--border)', padding: '20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 9, color: 'var(--fg-dark)' }}>
         <span>$METHANE · gas as a service · 2026</span>
         <div style={{ display: 'flex', gap: 16 }}>
-          {['pump.fun', 'dexscreener', 'drift', 'solscan'].map(l => (
+          {['pump.fun', 'dexscreener', 'lavarage', 'solscan'].map(l => (
             <a key={l} href="#" className="trace-link" style={{ color: 'var(--fg-dark)' }}>{l}</a>
           ))}
         </div>

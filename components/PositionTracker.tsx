@@ -2,33 +2,62 @@
 
 import { useEffect, useState } from 'react';
 
+interface Position {
+  address: string;
+  side: string;
+  collateral: number;
+  borrowed: number;
+  entryPrice: number;
+  currentPrice: number;
+  unrealizedPnl: number;
+  roiPercent: number;
+  liquidationPrice: number;
+  effectiveLeverage: number;
+  interestAccrued: number;
+  dailyInterestCost: number;
+  baseToken: string;
+  quoteToken: string;
+}
+
 interface PositionData {
   live: boolean;
+  venue: string;
   agentWallet: string;
+  position: {
+    hasPosition: boolean;
+    count: number;
+    positions: Position[];
+    totals: { collateral: number; pnl: number; avgLeverage: number };
+  };
   stats: {
     totalClaimed: number;
-    totalSwapped: number;
-    totalDeposited: number;
     totalLongNotional: number;
     cycleCount: number;
     pendingBuyback: number;
     totalBurned: number;
     burnCount: number;
     longCount: number;
-    depositCount: number;
   };
   message: string;
 }
 
-function Stat({ label, value, unit, color }: { label: string; value: string; unit?: string; color?: string }) {
+function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div>
       <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: color || 'var(--accent)' }}>
-        {value}<span style={{ fontSize: 10, fontWeight: 400, color: 'var(--fg-dark)', marginLeft: 3 }}>{unit}</span>
-      </div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: color || 'var(--accent)' }}>{value}</div>
     </div>
   );
+}
+
+function fmt(n: number | undefined, decimals = 2): string {
+  if (n === undefined || n === null || isNaN(n)) return '—';
+  return n.toFixed(decimals);
+}
+
+function fmtUsd(n: number | undefined): string {
+  if (n === undefined || n === null || isNaN(n)) return '—';
+  return `$${n.toFixed(2)}`;
 }
 
 export default function PositionTracker() {
@@ -49,7 +78,9 @@ export default function PositionTracker() {
   }, []);
 
   const s = data?.stats;
-  const isLive = data?.live || false;
+  const pos = data?.position;
+  const hasPos = pos?.hasPosition || false;
+  const p = hasPos ? pos?.positions?.[0] : null;
 
   return (
     <div>
@@ -57,95 +88,96 @@ export default function PositionTracker() {
       <div className="panel" style={{ padding: '20px 24px', marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span className={isLive ? 'status-dot' : ''} style={!isLive ? { width: 6, height: 6, background: 'var(--fg-dark)', display: 'inline-block' } : {}} />
+            <span className={hasPos ? 'status-dot' : ''} style={!hasPos ? { width: 6, height: 6, background: 'var(--fg-dark)', display: 'inline-block', borderRadius: '50%' } : {}} />
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.08em' }}>
-              {isLive ? 'POSITION ACTIVE' : 'POSITION — LAUNCHING SOON'}
+              {hasPos ? 'POSITION ACTIVE' : 'POSITION — LAUNCHING SOON'}
             </span>
+            <span style={{ fontSize: 9, color: 'var(--fg-dark)', marginLeft: 8 }}>via Lavarage</span>
           </div>
           {data?.agentWallet && (
             <a href={`https://solscan.io/account/${data.agentWallet}`} target="_blank" rel="noopener"
-              style={{ fontSize: 9, color: 'var(--fg-dark)' }}>
+              style={{ fontSize: 9, color: 'var(--fg-dark)', textDecoration: 'none' }}>
               agent: {data.agentWallet.slice(0, 4)}...{data.agentWallet.slice(-4)} ↗
             </a>
           )}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="grid-responsive">
-          <Stat label="DIRECTION" value="5× LONG" />
-          <Stat label="MARKET" value="FART-PERP" />
-          <Stat label="TOTAL DEPOSITED" value={loading ? '...' : s ? `$${s.totalDeposited.toFixed(2)}` : '—'} />
-          <Stat label="TOTAL NOTIONAL" value={loading ? '...' : s ? `$${s.totalLongNotional.toFixed(0)}` : '—'} color="var(--green)" />
-        </div>
+        {hasPos && p ? (
+          <>
+            {/* Live position details */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }} className="grid-responsive">
+              <Stat label="DIRECTION" value={`${fmt(p.effectiveLeverage, 1)}× LONG`} />
+              <Stat label="ENTRY PRICE" value={fmtUsd(p.entryPrice)} />
+              <Stat label="MARK PRICE" value={fmtUsd(p.currentPrice)} />
+              <Stat label="UNREALIZED PnL" value={fmtUsd(p.unrealizedPnl)} color={p.unrealizedPnl >= 0 ? 'var(--green)' : 'var(--red)'} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="grid-responsive">
+              <Stat label="ROI" value={`${fmt(p.roiPercent, 1)}%`} color={p.roiPercent >= 0 ? 'var(--green)' : 'var(--red)'} />
+              <Stat label="LIQUIDATION" value={fmtUsd(p.liquidationPrice)} color="var(--red)" />
+              <Stat label="COLLATERAL" value={`${fmt(p.collateral, 4)} SOL`} />
+              <Stat label="INTEREST / DAY" value={fmtUsd(p.dailyInterestCost)} color="var(--fg-dim)" />
+            </div>
+          </>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="grid-responsive">
+            <Stat label="DIRECTION" value="5× LONG" />
+            <Stat label="VENUE" value="Lavarage" />
+            <Stat label="ASSET" value="FART" />
+            <Stat label="STATUS" value={loading ? '...' : 'Launching Soon'} color="var(--fg-dim)" />
+          </div>
+        )}
       </div>
 
       {/* Pipeline Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="grid-responsive">
-        {/* Claiming */}
         <div className="panel" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>PIPELINE</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>cycles run</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s?.cycleCount || 0}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>total claimed</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s ? `${s.totalClaimed.toFixed(4)} SOL` : '—'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>total swapped</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s ? `$${s.totalSwapped.toFixed(2)}` : '—'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>deposits</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s?.depositCount || 0}</span>
-            </div>
+            {[
+              ['cycles run', s?.cycleCount || 0],
+              ['total claimed', s ? `${s.totalClaimed.toFixed(4)} SOL` : '—'],
+              ['total notional', s ? `${s.totalLongNotional.toFixed(4)} SOL` : '—'],
+              ['longs opened', s?.longCount || 0],
+            ].map(([k, v], i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--fg-dim)' }}>{k}</span>
+                <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : String(v)}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Burns */}
         <div className="panel" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>BURN TRACKER</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>total burned</span>
-              <span style={{ color: 'var(--red)', fontWeight: 600 }}>{loading ? '...' : s ? `${s.totalBurned.toFixed(0)} $M` : '0'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>burn events</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s?.burnCount || 0}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>trigger</span>
-              <span style={{ color: 'var(--fg-dim)' }}>+15% PnL</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>burn rate</span>
-              <span style={{ color: 'var(--fg-dim)' }}>0.5% supply</span>
-            </div>
+            {[
+              ['total burned', s ? `${s.totalBurned.toFixed(0)} $M` : '0'],
+              ['burn events', s?.burnCount || 0],
+              ['trigger', '+15% PnL'],
+              ['burn rate', '0.5% supply'],
+            ].map(([k, v], i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--fg-dim)' }}>{k}</span>
+                <span style={{ color: i < 2 ? 'var(--red)' : 'var(--fg-dim)', fontWeight: i < 2 ? 600 : 400 }}>{loading ? '...' : String(v)}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Buyback */}
         <div className="panel" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>BUYBACK RESERVE</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>pending</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s ? `${s.pendingBuyback.toFixed(4)} SOL` : '0'}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>allocation</span>
-              <span style={{ color: 'var(--fg-dim)' }}>30% of fees</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>long count</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{loading ? '...' : s?.longCount || 0}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--fg-dim)' }}>status</span>
-              <span style={{ color: 'var(--fg-dim)' }}>Phase 2</span>
-            </div>
+            {[
+              ['pending', s ? `${s.pendingBuyback.toFixed(4)} SOL` : '0'],
+              ['allocation', '30% of fees'],
+              ['long count', s?.longCount || 0],
+              ['venue', 'Lavarage'],
+            ].map(([k, v], i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--fg-dim)' }}>{k}</span>
+                <span style={{ color: i === 0 ? 'var(--accent)' : 'var(--fg-dim)', fontWeight: i === 0 ? 600 : 400 }}>{loading ? '...' : String(v)}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
