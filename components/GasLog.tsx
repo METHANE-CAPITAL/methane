@@ -1,65 +1,66 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { LiveDot, GasCloudIcon, FlameIcon, ChartUpIcon, SkullIcon, GaugeIcon } from './icons';
 
 interface LogEntry {
-  time: string;
-  type: 'CLAIM' | 'SWAP' | 'LONG' | 'PROFIT' | 'BURN' | 'ALERT';
+  type: string;
   message: string;
+  timestamp: string;
+  txHash?: string;
 }
 
-const MOCK_LOGS: LogEntry[] = [
-  { time: '04:12:33', type: 'CLAIM', message: '0.42 SOL claimed from creator fees' },
-  { time: '04:12:35', type: 'SWAP', message: '0.42 SOL → 28.14 USDC via Jupiter' },
-  { time: '04:12:38', type: 'LONG', message: 'FART long +$140.70 — position updated' },
-  { time: '04:02:44', type: 'CLAIM', message: '0.18 SOL claimed from creator fees' },
-  { time: '04:02:50', type: 'LONG', message: 'FART long +$60.30 — position updated' },
-  { time: '03:41:18', type: 'BURN', message: '12,400 $METHANE burned (0.12% supply)' },
-];
-
-const TYPE_CONFIG: Record<string, { color: string; Icon: typeof GasCloudIcon }> = {
-  CLAIM: { color: '#7CFC00', Icon: GasCloudIcon },
-  SWAP: { color: '#C49B2F', Icon: GaugeIcon },
-  LONG: { color: '#ADFF2F', Icon: ChartUpIcon },
-  PROFIT: { color: '#7CFC00', Icon: ChartUpIcon },
-  BURN: { color: '#FF4444', Icon: FlameIcon },
-  ALERT: { color: '#C49B2F', Icon: SkullIcon },
-};
-
 export default function GasLog() {
-  const [visible, setVisible] = useState<LogEntry[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    MOCK_LOGS.forEach((log, i) => {
-      setTimeout(() => setVisible(prev => [...prev, log]), i * 120);
-    });
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch('/api/logs');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setLogs(data.logs || []);
+      } catch { /* silent */ }
+      setLoading(false);
+    };
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 60000);
+    return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div className="gas-border">
-      <div className="px-5 py-2.5 border-b border-stink/8 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <LiveDot />
-          <span className="font-bungee text-xs text-stink/60">GAS LOG</span>
-        </div>
-        <span className="text-[9px] font-mono text-stink/15">LAST 24H</span>
-      </div>
+  const placeholders: LogEntry[] = [
+    { type: 'SYSTEM', message: 'agent initialized. monitoring creator wallet...', timestamp: new Date().toISOString() },
+    { type: 'INFO', message: 'waiting for first fee claim', timestamp: new Date().toISOString() },
+    { type: 'SYSTEM', message: 'drift connection established. FART-PERP #71 ready.', timestamp: new Date().toISOString() },
+  ];
 
-      <div>
-        {visible.map((log, i) => {
-          const config = TYPE_CONFIG[log.type];
-          return (
-            <div key={i} className="px-5 py-2 border-b border-stink/4 flex items-center gap-4 hover:bg-stink/[0.02] transition-colors">
-              <span className="text-[10px] font-mono text-stink/15 w-14 shrink-0">{log.time}</span>
-              <span className="flex items-center gap-1 text-[10px] font-mono font-bold w-12 shrink-0" style={{ color: config.color }}>
-                <config.Icon size={10} className="shrink-0" />
-                {log.type}
-              </span>
-              <span className="text-[12px] font-mono text-stink/40">{log.message}</span>
-            </div>
-          );
-        })}
+  const displayLogs = logs.length > 0 ? logs.slice(0, 10) : placeholders;
+
+  return (
+    <div>
+      <h2 className="text-accent text-sm mb-3">GAS LOG</h2>
+      <div className="bg-block text-[11px] leading-relaxed max-h-[300px] overflow-y-auto">
+        {loading ? (
+          <div className="text-dimmest">loading...</div>
+        ) : (
+          displayLogs.map((log, i) => {
+            const time = new Date(log.timestamp).toLocaleTimeString('en-US', { hour12: false });
+            const typeColor = log.type === 'CLAIM' ? 'text-green' : log.type === 'SWAP' ? 'text-green' : log.type === 'LONG' ? 'text-accent' : 'text-dimmer';
+            return (
+              <div key={i} className="flex gap-2">
+                <span className="text-dimmest shrink-0">[{time}]</span>
+                <span className={`shrink-0 ${typeColor}`}>{log.type.padEnd(7)}</span>
+                <span className="text-dim">{log.message}</span>
+                {log.txHash && (
+                  <a href={`https://solscan.io/tx/${log.txHash}`} target="_blank" rel="noopener" className="text-dimmest shrink-0">
+                    {log.txHash.slice(0, 8)}...
+                  </a>
+                )}
+              </div>
+            );
+          })
+        )}
+        <div className="text-dimmest mt-1 cursor-blink" />
       </div>
     </div>
   );
