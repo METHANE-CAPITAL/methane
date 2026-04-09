@@ -39,7 +39,7 @@ export default function Home() {
           <span className="status-dot" />
           <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}> {/* force redeploy */}
           {[
             { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
             { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
