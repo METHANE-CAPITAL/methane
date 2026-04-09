@@ -29,14 +29,14 @@ export default function MoleculeViz() {
       // Carbon atom (center)
       const carbonR = 24;
       const carbonGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, carbonR * 2);
-      carbonGlow.addColorStop(0, 'rgba(57, 255, 20, 0.4)');
-      carbonGlow.addColorStop(1, 'rgba(57, 255, 20, 0)');
+      carbonGlow.addColorStop(0, 'rgba(124, 252, 0, 0.4)');
+      carbonGlow.addColorStop(1, 'rgba(124, 252, 0, 0)');
       ctx.fillStyle = carbonGlow;
       ctx.fillRect(cx - carbonR * 2, cy - carbonR * 2, carbonR * 4, carbonR * 4);
 
       ctx.beginPath();
       ctx.arc(cx, cy, carbonR, 0, Math.PI * 2);
-      ctx.fillStyle = '#39FF14';
+      ctx.fillStyle = '#7CFC00';
       ctx.fill();
       ctx.fillStyle = '#000';
       ctx.font = 'bold 16px Inter, sans-serif';
@@ -60,7 +60,7 @@ export default function MoleculeViz() {
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(hx, hy);
-        ctx.strokeStyle = 'rgba(57, 255, 20, 0.3)';
+        ctx.strokeStyle = 'rgba(124, 252, 0, 0.3)';
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -73,21 +73,21 @@ export default function MoleculeViz() {
           12,
           0, Math.PI * 2
         );
-        ctx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
+        ctx.strokeStyle = 'rgba(124, 252, 0, 0.15)';
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.setLineDash([]);
 
         // H atom
         const hGlow = ctx.createRadialGradient(hx, hy, 0, hx, hy, 24);
-        hGlow.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
-        hGlow.addColorStop(1, 'rgba(255, 215, 0, 0)');
+        hGlow.addColorStop(0, 'rgba(196, 155, 47, 0.3)');
+        hGlow.addColorStop(1, 'rgba(196, 155, 47, 0)');
         ctx.fillStyle = hGlow;
         ctx.fillRect(hx - 24, hy - 24, 48, 48);
 
         ctx.beginPath();
         ctx.arc(hx, hy, 14, 0, Math.PI * 2);
-        ctx.fillStyle = '#FFD700';
+        ctx.fillStyle = '#C49B2F';
         ctx.fill();
         ctx.fillStyle = '#000';
         ctx.font = 'bold 12px Inter, sans-serif';
@@ -105,7 +105,7 @@ export default function MoleculeViz() {
     <div className="relative">
       <canvas ref={canvasRef} className="w-[280px] h-[280px]" />
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
-        <span className="text-[11px] font-mono text-neutral-400 tracking-widest">CH₄</span>
+        <span className="text-[11px] font-mono text-stink/40 tracking-widest">CH₄</span>
       </div>
     </div>
   );

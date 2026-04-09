@@ -44,14 +44,14 @@ export default function PressureGauge({ pressure, label, value, sublabel }: Pres
     const gradient = ctx.createLinearGradient(0, size, size, 0);
 
     if (pressure < 33) {
-      gradient.addColorStop(0, '#39FF14');
-      gradient.addColorStop(1, '#39FF14');
+      gradient.addColorStop(0, '#7CFC00');
+      gradient.addColorStop(1, '#7CFC00');
     } else if (pressure < 66) {
-      gradient.addColorStop(0, '#39FF14');
-      gradient.addColorStop(1, '#FFD700');
+      gradient.addColorStop(0, '#7CFC00');
+      gradient.addColorStop(1, '#C49B2F');
     } else {
-      gradient.addColorStop(0, '#FFD700');
-      gradient.addColorStop(1, '#FF3333');
+      gradient.addColorStop(0, '#C49B2F');
+      gradient.addColorStop(1, '#FF4444');
     }
 
     ctx.beginPath();
@@ -65,10 +65,10 @@ export default function PressureGauge({ pressure, label, value, sublabel }: Pres
     ctx.beginPath();
     ctx.arc(cx, cy, radius, startAngle, pressureAngle);
     ctx.strokeStyle = pressure < 33
-      ? 'rgba(57, 255, 20, 0.3)'
+      ? 'rgba(124, 252, 0, 0.3)'
       : pressure < 66
-        ? 'rgba(255, 215, 0, 0.3)'
-        : 'rgba(255, 51, 51, 0.3)';
+        ? 'rgba(196, 155, 47, 0.3)'
+        : 'rgba(255, 68, 68, 0.3)';
     ctx.lineWidth = 20;
     ctx.lineCap = 'round';
     ctx.stroke();
@@ -109,16 +109,16 @@ export default function PressureGauge({ pressure, label, value, sublabel }: Pres
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-neutral-300">
+      <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-stink/40">
         {label}
       </span>
       <canvas ref={canvasRef} className="w-[200px] h-[200px]" />
       <div className="text-center -mt-4">
-        <div className="text-2xl font-mono font-bold text-toxic toxic-text-glow">
+        <div className="text-2xl font-bungee text-stink stink-glow">
           {value}
         </div>
         {sublabel && (
-          <div className="text-[11px] font-mono text-neutral-400 mt-1">
+          <div className="text-[11px] font-mono text-stink/30 mt-1">
             {sublabel}
           </div>
         )}
