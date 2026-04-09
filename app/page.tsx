@@ -71,10 +71,9 @@ export default function Home() {
           Gas as a Service
         </div>
 
-        <p className="reveal reveal-d2" style={{ color: 'var(--fg-dark)', fontSize: 12, maxWidth: 560, margin: '0 auto', lineHeight: 1.8 }}>
-          Fartcoin has $200M+ market cap, listings everywhere, and zero ecosystem infrastructure.
-          <br /><span style={{ color: 'var(--fg-dim)' }}>$METHANE is the infrastructure layer.</span>
-          <br /><span style={{ color: 'var(--fg-dark)' }}>Any token can plug in. Get your own FART vault. Autonomous leveraged exposure on Drift.</span>
+        <p className="reveal reveal-d2" style={{ color: 'var(--fg)', fontSize: 13, maxWidth: 560, margin: '0 auto', lineHeight: 1.8 }}>
+          Open-source tools that turn idle creator fees into leveraged Fartcoin exposure.
+          <br /><span style={{ color: 'var(--fg-dim)' }}>Built for builders. Free to plug in. Your vault, your upside.</span>
         </p>
 
         <div className="reveal reveal-d3 panel" style={{ display: 'inline-block', padding: '16px 32px', marginTop: 32, textAlign: 'center' }}>
@@ -83,66 +82,65 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══ § 01 — THE THESIS ═══ */}
-      <div className="section-label"><span>§ 01 · THE THESIS</span></div>
+      {/* ═══ § 01 — WHY WE BUILT THIS ═══ */}
+      <div className="section-label"><span>§ 01 · WHY WE BUILT THIS</span></div>
 
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="grid-responsive">
           <div>
             <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 16, lineHeight: 1.5 }}>
-              Fartcoin is king.<br />It just has no kingdom.
+              Fartcoin deserves an ecosystem.
             </h2>
             <p style={{ fontSize: 13, color: 'var(--fg)', lineHeight: 1.7, marginBottom: 12 }}>
-              No infrastructure tokens. No DeFi layer. No ecosystem building on top of it.
-              Just a massive, liquid, iconic memecoin — sitting there.
+              $200M+ market cap. Listed everywhere. Born from{' '}
+              <a href="https://truthterminal.wiki/" target="_blank" rel="noopener" className="trace-link" style={{ color: 'var(--fg-dim)' }}>Truth Terminal</a>.
+              But no one is building infrastructure for it. No tools. No DeFi layer. No way for other projects to tap into FART&apos;s momentum.
             </p>
             <p style={{ fontSize: 13, color: 'var(--fg-dim)', lineHeight: 1.7, marginBottom: 12 }}>
-              <span style={{ color: 'var(--white)', fontWeight: 600 }}>$METHANE is the picks-and-shovels play on Fartcoin.</span>{' '}
-              We provide autonomous treasury management for any token that wants leveraged FART exposure.
+              We built $METHANE to fix that. It&apos;s a set of open-source tools that let <span style={{ color: 'var(--white)', fontWeight: 600 }}>any token on Solana</span> turn
+              their idle creator fees into leveraged Fartcoin exposure through Drift Protocol.
             </p>
             <p style={{ fontSize: 13, color: 'var(--fg-dim)', lineHeight: 1.7 }}>
-              Your token generates creator fees. Those fees sit in a wallet doing nothing.
-              Route them through METHANE → they become a 5× leveraged FART long on Drift.
-              <span style={{ color: 'var(--green)' }}> Your project now has a treasury that grows when FART pumps.</span>
+              We&apos;re not here to extract. We&apos;re here to give projects tools that actually work —
+              tools that grow their treasury, create buy pressure on FART, and strengthen the whole ecosystem.
+              <span style={{ color: 'var(--green)' }}> Everyone benefits. That&apos;s the point.</span>
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {/* Why this works */}
+            {/* What you get — direct, plain language */}
             <div className="panel" style={{ padding: '20px 24px' }}>
-              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>WHY IT WORKS</div>
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>WHAT YOU GET</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12 }}>
                 {[
-                  ['for your project', 'idle fees → leveraged FART treasury'],
-                  ['for Fartcoin', 'constant buy pressure from every project'],
-                  ['for $METHANE', 'protocol fees on every vault managed'],
-                  ['the flywheel', 'more projects → more buying → FART ↑ → more projects'],
+                  ['your own Drift vault', 'isolated position, your PnL'],
+                  ['autonomous pipeline', 'claims, swaps, deposits every 15 min'],
+                  ['5× FART leverage', '$100 fees → $500 notional position'],
+                  ['on-chain & verifiable', 'every tx public on Solscan'],
+                  ['free to plug in', 'no upfront cost, no lock-in'],
                 ].map(([k, v], i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                    <span style={{ color: 'var(--fg-dark)', flexShrink: 0 }}>{k}</span>
-                    <span style={{ color: i === 3 ? 'var(--green)' : 'var(--accent)', fontWeight: 600, textAlign: 'right' }}>{v}</span>
+                    <span style={{ color: 'var(--accent)', fontWeight: 600, flexShrink: 0 }}>{k}</span>
+                    <span style={{ color: 'var(--fg-dim)', textAlign: 'right' }}>{v}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Fartcoin stats */}
+            {/* Be direct about risks too */}
             <div className="panel" style={{ padding: '20px 24px' }}>
-              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>FARTCOIN ON SOLANA</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12 }}>
-                {[
-                  ['perp market', 'FART-PERP #71'],
-                  ['oracle', 'Pyth Lazer #182'],
-                  ['max leverage', '20× on Drift'],
-                  ['our leverage', '5× (adjustable)'],
-                ].map(([k, v], i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--fg-dark)' }}>{k}</span>
-                    <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{v}</span>
-                  </div>
-                ))}
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 14 }}>BE AWARE</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: 'var(--fg-dim)' }}>
+                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Leverage amplifies losses too — 5× means a 20% FART drop could liquidate</div>
+                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Funding rates on Drift can be negative — costs money to hold a long</div>
+                <div><span style={{ color: 'var(--red)', marginRight: 6 }}>›</span>Smart contract risk exists on Drift, Jupiter, and our pipeline</div>
+                <div><span style={{ color: 'var(--fg-dark)', marginRight: 6 }}>›</span>Liquidation recovery is built in — agent re-enters at lower leverage after cooldown</div>
               </div>
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', gap: 16, fontSize: 11 }}>
+            </div>
+
+            {/* Fartcoin stats */}
+            <div className="panel" style={{ padding: '16px 24px' }}>
+              <div style={{ display: 'flex', gap: 16, fontSize: 11, flexWrap: 'wrap' }}>
                 <a href="https://dexscreener.com/solana/9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump" target="_blank" rel="noopener" className="trace-link">dexscreener ↗</a>
                 <a href="https://www.coingecko.com/en/coins/fartcoin" target="_blank" rel="noopener" className="trace-link">coingecko ↗</a>
                 <a href="https://app.drift.trade/perpetuals/FART-PERP" target="_blank" rel="noopener" className="trace-link">fart-perp ↗</a>
@@ -159,10 +157,10 @@ export default function Home() {
       <div className="section-label" style={{ marginTop: 40 }}><span>§ 02 · YOUR VAULT</span></div>
 
       <section className="reveal" style={{ paddingBottom: 40 }}>
-        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Every project gets its own vault.</h2>
-        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 550 }}>
-          Not a shared pool. Your token, your Drift vault, your leveraged FART position, your PnL.
-          METHANE manages the strategy. You keep the upside.
+        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Your token. Your vault. Your upside.</h2>
+        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 580 }}>
+          We don&apos;t pool your fees with everyone else. Each project gets a dedicated Drift vault —
+          your own isolated position with your own entry price and PnL. The tools are open. The code is public. You can verify every transaction.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="grid-responsive">
@@ -261,10 +259,10 @@ export default function Home() {
       <div className="section-label" style={{ marginTop: 40 }}><span>§ 04 · THE FLYWHEEL</span></div>
 
       <section className="reveal" style={{ paddingBottom: 40 }}>
-        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Everyone wins. That&apos;s the point.</h2>
-        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 8, maxWidth: 550 }}>
-          Every project that plugs in creates FART buy pressure. FART goes up. All vaults grow.
-          More projects want in. The flywheel spins faster.
+        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>The more projects plug in, the stronger everyone gets.</h2>
+        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 8, maxWidth: 580 }}>
+          Every project that joins creates FART buy pressure. FART goes up. All vaults grow.
+          It&apos;s not zero-sum — every new participant makes the ecosystem stronger for everyone already in it.
         </p>
 
         <FlywheelDiagram />
@@ -274,19 +272,19 @@ export default function Home() {
           <div className="panel" style={{ padding: '16px 20px' }}>
             <div style={{ fontSize: 10, color: 'var(--green)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>YOUR PROJECT</div>
             <div style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              Idle creator fees → leveraged FART treasury. Your token now has a growing war chest that compounds automatically.
+              Your idle fees stop sitting in a wallet doing nothing. They become a treasury that grows when FART pumps. No extra work on your end.
             </div>
           </div>
           <div className="panel" style={{ padding: '16px 20px' }}>
             <div style={{ fontSize: 10, color: 'var(--green)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>FARTCOIN</div>
             <div style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              Constant buy pressure from every plugged-in project. More projects = more buying = price goes up. METHANE is Fartcoin&apos;s growth engine.
+              Every project that plugs in creates real buy pressure on FART. We&apos;re building the demand layer that Fartcoin has been missing.
             </div>
           </div>
           <div className="panel" style={{ padding: '16px 20px' }}>
-            <div style={{ fontSize: 10, color: 'var(--green)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>$METHANE HOLDERS</div>
+            <div style={{ fontSize: 10, color: 'var(--green)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 8 }}>THE SPACE</div>
             <div style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              Protocol fee on every vault managed. More vaults = more protocol revenue. $METHANE is the infrastructure bet on the entire Fartcoin ecosystem.
+              Open-source tools anyone can use or fork. We want more people building on this — the ecosystem gets stronger with every contributor.
             </div>
           </div>
         </div>
@@ -328,9 +326,10 @@ export default function Home() {
       <div className="section-label" style={{ marginTop: 40 }}><span>§ 06 · PLUG IN</span></div>
 
       <section className="reveal" style={{ paddingBottom: 48 }}>
-        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Get your own FART vault.</h2>
-        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 500 }}>
-          Verify your token. Configure fee routing. METHANE creates your dedicated Drift vault and starts the pipeline. Your fees start working in 15 minutes.
+        <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Ready to plug in? Here&apos;s how.</h2>
+        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 540 }}>
+          Three steps. No cost. No lock-in. Verify your token, point your fee routing to the agent wallet,
+          and your dedicated vault starts running in 15 minutes. You can disconnect anytime.
         </p>
 
         <SetupFlow />
