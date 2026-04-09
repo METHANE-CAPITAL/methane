@@ -1,6 +1,7 @@
 import FartChart from '@/components/FartChart';
 import PositionDashboard from '@/components/PositionDashboard';
 import GasLog from '@/components/GasLog';
+import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
 
 const ASCII_HERO = `     __ __  _________________  _____    _   ________
    _/ //  |/  / ____/_  __/ / / /   |  / | / / ____/
@@ -43,7 +44,9 @@ export default function Home() {
 
       {/* ═══ HERO ═══ */}
       <section className="section flex flex-col items-center text-center">
-        <pre className="text-accent text-[11px] sm:text-[14px] md:text-[17px] leading-[1.15] select-none whitespace-pre font-bold">{ASCII_HERO}</pre>
+        <div className="text-accent text-[11px] sm:text-[14px] md:text-[17px] font-bold">
+          <MethaneAscii />
+        </div>
 
         <div className="mt-6 mb-1 text-[11px] tracking-[0.25em] text-dim font-medium uppercase">
           Gas Pipeline as a Service
@@ -63,7 +66,9 @@ export default function Home() {
 
       {/* ═══ WHY FART ═══ */}
       <section className="section">
-        <pre className="text-dim text-[8px] sm:text-[9px] md:text-[10px] leading-[1.2] select-none whitespace-pre overflow-x-auto mb-6">{ASCII_FART}</pre>
+        <div className="text-dim text-[8px] sm:text-[9px] md:text-[10px] overflow-x-auto mb-6">
+          <FartPerpsAscii />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1px_1fr] gap-8">
           <div>
