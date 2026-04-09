@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import VaultActions from '@/components/VaultActions';
+import VaultActivity from '@/components/VaultActivity';
 
 interface Position {
   address: string;
@@ -72,15 +73,35 @@ export default function VaultPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const [pending, setPending] = useState(false);
+
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch(`/api/vault?mint=${mint}`);
       if (!res.ok) {
-        if (res.status === 404) setError('Vault not found');
-        else setError('Failed to load vault');
+        if (res.status === 404) {
+          // Check if it's in pending queue
+          try {
+            const pendingRes = await fetch(`/api/vault/pending?mint=${mint}`);
+            if (pendingRes.ok) {
+              const pData = await pendingRes.json();
+              if (pData.pending) {
+                setPending(true);
+                setError(null);
+                setLoading(false);
+                return;
+              }
+            }
+          } catch { /* silent */ }
+          setError('Vault not found');
+        } else {
+          setError('Failed to load vault');
+        }
+        setLoading(false);
         return;
       }
       setData(await res.json());
+      setPending(false);
       setError(null);
     } catch {
       setError('Failed to load vault');
@@ -110,11 +131,26 @@ export default function VaultPage() {
     );
   }
 
+  if (pending) {
+    return (
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
+        <div style={{ fontSize: 14, color: 'var(--accent)', marginBottom: 12 }}>⏳ Vault registration pending</div>
+        <p style={{ fontSize: 12, color: 'var(--fg-dim)', maxWidth: 440, margin: '0 auto 16px', lineHeight: 1.7 }}>
+          Your vault is being set up. The agent processes new registrations every 15 minutes.
+          This page will update automatically when your vault is ready.
+        </p>
+        <div style={{ fontSize: 10, color: 'var(--fg-dark)', fontFamily: 'monospace', marginBottom: 20 }}>{mint}</div>
+        <a href="/" style={{ fontSize: 11, color: 'var(--fg-dim)', textDecoration: 'none' }}>← back to methane</a>
+      </div>
+    );
+  }
+
   if (error || !data) {
     return (
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 14, color: 'var(--red)', marginBottom: 12 }}>{error || 'Vault not found'}</div>
-        <a href="/" style={{ fontSize: 11, color: 'var(--fg-dim)' }}>← back to methane</a>
+        <p style={{ fontSize: 11, color: 'var(--fg-dark)', marginBottom: 16 }}>This token hasn&apos;t been registered with Methane yet.</p>
+        <a href="/" style={{ fontSize: 11, color: 'var(--fg-dim)', textDecoration: 'none' }}>← register your token</a>
       </div>
     );
   }
@@ -296,6 +332,15 @@ export default function VaultPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Activity Feed */}
+      <div className="section-label" style={{ marginTop: 24 }}><span>ACTIVITY</span></div>
+
+      <section style={{ paddingBottom: 32 }}>
+        <div className="panel" style={{ padding: 0, overflow: 'hidden' }}>
+          <VaultActivity tokenMint={mint} vaultAddress={v.vaultAddress} />
         </div>
       </section>
 

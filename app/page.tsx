@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import FartChart from '@/components/FartChart';
 import PositionDashboard from '@/components/PositionDashboard';
 import PositionTracker from '@/components/PositionTracker';
+import ProtocolStats from '@/components/ProtocolStats';
+import BurnTracker from '@/components/BurnTracker';
 import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
@@ -39,6 +41,7 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           {[
+            { label: 'vaults', href: '/vaults', icon: '' },
             { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
             { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
             { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/lavarage.png' },
@@ -48,7 +51,7 @@ export default function Home() {
                style={{ color: 'var(--fg-dim)', fontSize: 11, letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', transition: 'color 0.2s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
                onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
-              <img src={l.icon} alt={l.label} width={18} height={18} style={{ borderRadius: 3 }} />
+              {l.icon && <img src={l.icon} alt={l.label} width={18} height={18} style={{ borderRadius: 3 }} />}
               {l.label}
             </a>
           ))}
@@ -249,7 +252,7 @@ export default function Home() {
       </section>
 
       <section className="reveal" style={{ paddingBottom: 40 }}>
-        <PositionTracker />
+        <ProtocolStats />
       </section>
 
       <hr className="divider" />
@@ -344,6 +347,10 @@ export default function Home() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="reveal" style={{ paddingBottom: 40 }}>
+        <BurnTracker />
       </section>
 
       <hr className="divider" />
