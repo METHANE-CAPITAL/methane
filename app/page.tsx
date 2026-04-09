@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import FartChart from '@/components/FartChart';
 import PositionDashboard from '@/components/PositionDashboard';
 import GasLog from '@/components/GasLog';
+import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
 
 // Scroll reveal
@@ -199,34 +200,18 @@ export default function Home() {
 
       <section className="reveal" style={{ paddingBottom: 48 }}>
         <h2 style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Gas Pipeline as a Service</h2>
-        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24, maxWidth: 500 }}>
-          Any project on Solana can route creator fees into the shared FART vault. No code. No setup.
+        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 20, maxWidth: 500 }}>
+          Any project on Solana can route creator fees into the shared FART vault. Verify your token, configure routing, and you&apos;re live.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }} className="grid-responsive">
-          {[
-            { n: '01', title: 'CONNECT', lines: ['register creator wallet', 'set fee routing %'] },
-            { n: '02', title: 'PIPELINE', lines: ['agent monitors wallet', 'claims → swaps → deposits', 'fully automatic'] },
-            { n: '03', title: 'EARN', lines: ['proportional 5× exposure', 'live dashboard + widget', 'real PnL, real yield'] },
-          ].map((step, i) => (
-            <div key={i} className="panel" style={{ padding: '20px 24px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 9, color: 'var(--fg-dark)' }}>{step.n}</span>
-                <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>{step.title}</span>
-              </div>
-              {step.lines.map((line, j) => (
-                <div key={j} style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.7 }}>{line}</div>
-              ))}
-            </div>
-          ))}
-        </div>
+        <SetupFlow />
 
-        <div className="panel-inset" style={{ padding: '20px 24px', marginTop: 16 }}>
-          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 12 }}>THE FLYWHEEL</div>
+        <div className="panel-inset" style={{ padding: '16px 20px', marginTop: 16 }}>
+          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 10 }}>THE FLYWHEEL</div>
           <pre style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6, whiteSpace: 'pre' }}>{`  more partners → more fees → bigger vault → better returns
        ↑                                            │
        └────────────────────────────────────────────┘`}</pre>
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--fg-dark)' }}>
+          <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--fg-dark)' }}>
             <div>FART gets buy pressure <span style={{ color: 'var(--green)' }}>↑</span></div>
             <div>$METHANE burns on profit <span style={{ color: 'var(--red)' }}>↓</span></div>
             <div>partners earn yield <span style={{ color: 'var(--green)' }}>↑</span></div>
