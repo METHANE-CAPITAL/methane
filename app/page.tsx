@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import FartChart from '@/components/FartChart';
 import PositionDashboard from '@/components/PositionDashboard';
+import PositionTracker from '@/components/PositionTracker';
+import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
@@ -159,8 +161,12 @@ export default function Home() {
         <FartChart />
       </section>
 
-      <section className="reveal" style={{ paddingBottom: 48 }}>
+      <section className="reveal" style={{ paddingBottom: 16 }}>
         <PositionDashboard />
+      </section>
+
+      <section className="reveal" style={{ paddingBottom: 40 }}>
+        <PositionTracker />
       </section>
 
       <hr className="divider" />
@@ -206,16 +212,8 @@ export default function Home() {
 
         <SetupFlow />
 
-        <div className="panel-inset" style={{ padding: '16px 20px', marginTop: 16 }}>
-          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em', marginBottom: 10 }}>THE FLYWHEEL</div>
-          <pre style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6, whiteSpace: 'pre' }}>{`  more partners → more fees → bigger vault → better returns
-       ↑                                            │
-       └────────────────────────────────────────────┘`}</pre>
-          <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--fg-dark)' }}>
-            <div>FART gets buy pressure <span style={{ color: 'var(--green)' }}>↑</span></div>
-            <div>$METHANE burns on profit <span style={{ color: 'var(--red)' }}>↓</span></div>
-            <div>partners earn yield <span style={{ color: 'var(--green)' }}>↑</span></div>
-          </div>
+        <div style={{ marginTop: 16 }}>
+          <FlywheelDiagram />
         </div>
       </section>
 
