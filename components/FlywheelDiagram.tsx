@@ -1,90 +1,145 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 export default function FlywheelDiagram() {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [spin, setSpin] = useState(0);
+
+  useEffect(() => {
+    const iv = setInterval(() => setSpin(p => (p + 0.15) % 360), 50);
+    return () => clearInterval(iv);
+  }, []);
+
   const nodes = [
-    { label: 'YOUR TOKEN\nFEES', x: 200, y: 40 },
-    { label: 'YOUR DRIFT\nVAULT', x: 360, y: 120 },
-    { label: '5× FART\nLONG', x: 360, y: 260 },
-    { label: 'FART BUY\nPRESSURE', x: 200, y: 340 },
-    { label: 'FART\nPRICE ↑', x: 40, y: 260 },
-    { label: 'ALL VAULTS\nGROW', x: 40, y: 120 },
+    { label: 'TOKEN FEES', desc: 'Creator fees from your project', icon: '◆' },
+    { label: 'METHANE VAULT', desc: 'Isolated vault per project', icon: '⬡' },
+    { label: '7× FART LONG', desc: 'Leveraged via Lavarage', icon: '⟠' },
+    { label: 'BUY PRESSURE', desc: 'FART demand increases', icon: '▲' },
+    { label: 'FART PRICE ↑', desc: 'Rising tide lifts all boats', icon: '◉' },
+    { label: 'ALL VAULTS ↑', desc: 'Every position grows', icon: '⊕' },
   ];
 
+  const cx = 200, cy = 190, rx = 140, ry = 130;
+
+  const positions = nodes.map((_, i) => {
+    const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+    return { x: cx + Math.cos(angle) * rx, y: cy + Math.sin(angle) * ry };
+  });
+
   return (
-    <div className="panel" style={{ padding: '20px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className="panel" style={{ padding: '24px 24px 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.12em' }}>THE FLYWHEEL</div>
         <div style={{ fontSize: 9, color: 'var(--fg-dark)' }}>each project · own vault · shared upside</div>
       </div>
 
-      <svg viewBox="0 0 400 380" style={{ width: '100%', maxWidth: 500, display: 'block', margin: '0 auto' }}>
+      <svg viewBox="0 0 400 380" style={{ width: '100%', maxWidth: 520, display: 'block', margin: '0 auto' }}>
         <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,0.2)" />
+          <marker id="fw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M 0 1 L 8 5 L 0 9 z" fill="rgba(90,170,69,0.6)" />
           </marker>
-          <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(90,170,69,0.5)" />
-          </marker>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
 
-        {[
-          { from: 0, to: 1, color: 'rgba(255,255,255,0.12)' },
-          { from: 1, to: 2, color: 'rgba(255,255,255,0.12)' },
-          { from: 2, to: 3, color: 'rgba(90,170,69,0.25)' },
-          { from: 3, to: 4, color: 'rgba(90,170,69,0.25)' },
-          { from: 4, to: 5, color: 'rgba(90,170,69,0.25)' },
-          { from: 5, to: 0, color: 'rgba(90,170,69,0.25)' },
-        ].map((edge, i) => {
-          const f = nodes[edge.from];
-          const t = nodes[edge.to];
-          const cx = 200, cy = 190;
-          const fx = f.x + (cx - f.x) * 0.15;
-          const fy = f.y + (cy - f.y) * 0.15;
-          const tx = t.x + (cx - t.x) * 0.15;
-          const ty = t.y + (cy - t.y) * 0.15;
-          const mx = (fx + tx) / 2 + (cy - (fy + ty) / 2) * 0.15;
-          const my = (fy + ty) / 2 - (cx - (fx + tx) / 2) * 0.15;
+        {/* Spinning orbit ring */}
+        <ellipse cx={cx} cy={cy} rx={rx + 8} ry={ry + 8}
+          fill="none" stroke="rgba(90,170,69,0.06)" strokeWidth={1} />
+
+        {/* Orbit pulse dot */}
+        <circle
+          cx={cx + Math.cos((spin * Math.PI) / 180) * (rx + 8)}
+          cy={cy + Math.sin((spin * Math.PI) / 180) * (ry + 8)}
+          r={3} fill="rgba(90,170,69,0.4)" filter="url(#glow)" />
+
+        {/* Connection arrows */}
+        {positions.map((from, i) => {
+          const to = positions[(i + 1) % nodes.length];
+          // Shorten line to not overlap nodes
+          const dx = to.x - from.x, dy = to.y - from.y;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          const nx = dx / len, ny = dy / len;
+          const gap = 44;
+          const sx = from.x + nx * gap, sy = from.y + ny * gap;
+          const ex = to.x - nx * gap, ey = to.y - ny * gap;
+          // Slight curve
+          const mx = (sx + ex) / 2 + (cy - (sy + ey) / 2) * 0.12;
+          const my = (sy + ey) / 2 - (cx - (sx + ex) / 2) * 0.12;
+          const isHot = hovered === i || hovered === (i + 1) % nodes.length;
           return (
-            <path
-              key={i}
-              d={`M ${fx} ${fy} Q ${mx} ${my} ${tx} ${ty}`}
-              stroke={edge.color}
-              strokeWidth={1.5}
+            <path key={i}
+              d={`M ${sx} ${sy} Q ${mx} ${my} ${ex} ${ey}`}
+              stroke={isHot ? 'rgba(90,170,69,0.5)' : 'rgba(90,170,69,0.15)'}
+              strokeWidth={isHot ? 2 : 1.2}
               fill="none"
-              markerEnd={edge.color.includes('170,69') ? 'url(#arrow-green)' : 'url(#arrow)'}
+              markerEnd="url(#fw-arrow)"
+              style={{ transition: 'stroke 0.3s, stroke-width 0.3s' }}
             />
           );
         })}
 
-        <text x="200" y="186" textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.1)" letterSpacing="0.1em" fontFamily="inherit">MORE PROJECTS</text>
-        <text x="200" y="198" textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.1)" letterSpacing="0.1em" fontFamily="inherit">FASTER SPIN</text>
+        {/* Center text */}
+        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.08)" letterSpacing="0.12em" fontFamily="inherit">MORE PROJECTS</text>
+        <text x={cx} y={cy + 6} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.08)" letterSpacing="0.12em" fontFamily="inherit">FASTER SPIN</text>
 
-        {nodes.map((node, i) => {
-          const lines = node.label.split('\n');
+        {/* Nodes */}
+        {positions.map((pos, i) => {
+          const node = nodes[i];
+          const isHot = hovered === i;
           const isGreen = i >= 3;
-          const fill = isGreen ? 'rgba(90,170,69,0.08)' : 'rgba(255,255,255,0.03)';
-          const stroke = isGreen ? 'rgba(90,170,69,0.25)' : 'var(--border-med)';
-          const textColor = isGreen ? 'var(--green)' : 'var(--fg-dim)';
           return (
-            <g key={i}>
-              <rect x={node.x - 42} y={node.y - 12} width={84} height={lines.length * 14 + 8} rx={0}
-                fill={fill} stroke={stroke} strokeWidth={1} />
-              {lines.map((line, j) => (
-                <text key={j} x={node.x} y={node.y + j * 14 + 6} textAnchor="middle"
-                  fontSize="9" fill={textColor} fontWeight="600" letterSpacing="0.06em" fontFamily="inherit">
-                  {line}
+            <g key={i}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              style={{ cursor: 'default' }}>
+              {/* Hit area */}
+              <rect x={pos.x - 48} y={pos.y - 28} width={96} height={56} fill="transparent" />
+
+              {/* Box */}
+              <rect x={pos.x - 44} y={pos.y - 24} width={88} height={48} rx={0}
+                fill={isHot ? (isGreen ? 'rgba(90,170,69,0.12)' : 'rgba(255,255,255,0.06)')
+                  : (isGreen ? 'rgba(90,170,69,0.05)' : 'rgba(255,255,255,0.02)')}
+                stroke={isHot ? (isGreen ? 'rgba(90,170,69,0.5)' : 'rgba(255,255,255,0.15)')
+                  : (isGreen ? 'rgba(90,170,69,0.2)' : 'var(--border)')}
+                strokeWidth={isHot ? 1.5 : 1}
+                style={{ transition: 'all 0.2s' }}
+              />
+
+              {/* Icon */}
+              <text x={pos.x} y={pos.y - 6} textAnchor="middle"
+                fontSize="11" fill={isGreen ? 'var(--green)' : 'var(--accent)'}
+                style={{ opacity: isHot ? 1 : 0.6, transition: 'opacity 0.2s' }}>
+                {node.icon}
+              </text>
+
+              {/* Label */}
+              <text x={pos.x} y={pos.y + 10} textAnchor="middle"
+                fontSize="8" fill={isGreen ? 'var(--green)' : 'var(--fg-dim)'}
+                fontWeight="700" letterSpacing="0.08em" fontFamily="inherit">
+                {node.label}
+              </text>
+
+              {/* Tooltip on hover */}
+              {isHot && (
+                <text x={pos.x} y={pos.y + 36} textAnchor="middle"
+                  fontSize="8" fill="var(--fg-dark)" fontFamily="inherit">
+                  {node.desc}
                 </text>
-              ))}
+              )}
             </g>
           );
         })}
       </svg>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12, fontSize: 10, color: 'var(--fg-dark)' }}>
-        <span>more projects plug in <span style={{ color: 'var(--green)' }}>→</span></span>
-        <span>more FART buying <span style={{ color: 'var(--green)' }}>→</span></span>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 16, fontSize: 10, color: 'var(--fg-dark)', flexWrap: 'wrap' }}>
+        <span>fees flow in <span style={{ color: 'var(--green)' }}>→</span></span>
+        <span>leverage amplifies <span style={{ color: 'var(--green)' }}>→</span></span>
+        <span>FART price rises <span style={{ color: 'var(--green)' }}>→</span></span>
         <span>all vaults grow <span style={{ color: 'var(--green)' }}>→</span></span>
-        <span>repeat</span>
+        <span style={{ color: 'var(--green)' }}>repeat</span>
       </div>
     </div>
   );
