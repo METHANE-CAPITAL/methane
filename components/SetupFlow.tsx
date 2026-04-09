@@ -219,7 +219,7 @@ export default function SetupFlow() {
           <div style={{ fontSize: 11, color: 'var(--fg-dark)', marginTop: 4 }}>
             <div>› add the agent wallet as a fee-sharing recipient on pump.fun</div>
             <div>› set the share percentage to <span style={{ color: 'var(--accent)' }}>{pct}%</span></div>
-            <div>› the agent will auto-claim, swap, and deposit to Drift</div>
+            <div>› the agent will auto-claim and open a leveraged FART long on Lavarage</div>
           </div>
 
           <button onClick={() => setStep(3)} style={{
@@ -241,7 +241,7 @@ export default function SetupFlow() {
               <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)' }}>Pipeline active</span>
             </div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              The agent is monitoring your creator wallet. When fees accumulate above 0.05 SOL, it will auto-claim → swap → deposit → long FART-PERP at 5×.
+              The agent is monitoring your creator wallet. When fees accumulate above 0.05 SOL, it will auto-claim → deposit SOL collateral → open 5× FART long on Lavarage.
             </p>
           </div>
 

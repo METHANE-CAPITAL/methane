@@ -41,7 +41,7 @@ export default function Home() {
           {[
             { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
             { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
-            { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/drift.png' },
+            { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/lavarage.png' },
           ].map(l => (
             <a key={l.label} href={l.href}
                target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
@@ -114,7 +114,7 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12 }}>
                 {[
                   ['your own leveraged vault', 'isolated position, your PnL'],
-                  ['autonomous pipeline', 'claims, swaps, deposits every 15 min'],
+                  ['autonomous pipeline', 'claims + leverages every 15 min'],
                   ['5× FART leverage', '$100 fees → $500 notional position'],
                   ['on-chain & verifiable', 'every tx public on Solscan'],
                   ['free to plug in', 'no upfront cost, no lock-in'],
@@ -297,7 +297,7 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-responsive">
           {[
-            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'venue: lavarage', 'collateral: SOL'],
+            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'venue: lavarage', 'leverage: up to 7.5×', 'collateral: SOL'],
               detail: 'The core loop that powers everything. Every 15 minutes, the agent checks your creator fee wallet. If there\'s at least 0.05 SOL worth of fees, it claims them, uses the SOL as collateral on Lavarage to open a leveraged long — borrowing more SOL and buying real FART tokens on-chain. Fully autonomous — no manual intervention needed.' },
             { name: 'burn_on_rip', desc: 'Deflationary on profit', specs: ['trigger: +15% unrealized PnL', 'burn: 0.5% total supply', 'source: 30% buyback alloc', 'dest: solana null address', 'freq: per take-profit'],
               detail: 'When FART pumps and your vault hits +15% unrealized PnL, the agent takes profit on a portion and uses the 30% buyback allocation to buy $METHANE tokens and send them to the Solana null address — permanently removing them from supply. The more FART pumps, the more $METHANE gets burned.' },
@@ -305,7 +305,7 @@ export default function Home() {
               detail: 'At major PnL milestones (2×, 5×, 10×), the agent realizes 30% of gains and distributes them directly to the top 500 $METHANE holders via SPL token transfer. A snapshot is taken at the milestone block to determine eligibility. Bigger bag = bigger share. Rewards for holding through the run.' },
             { name: 'critical_mass', desc: 'Governance scaling', specs: ['$100K MC → 3× vote', '$500K MC → 5× vote', '$1M MC → 7× vote', 'governance: SPL Realms', 'execution: 24h quorum'],
               detail: 'As $METHANE grows, governance power scales up. At $100K market cap, each token gets 3× voting weight. At $1M, 7×. This means early holders who believe in the project get outsized governance influence. Proposals go through SPL Realms with a 24-hour quorum period. Community decides leverage levels, fee splits, and new mechanics.' },
-            { name: 'composting', desc: 'Yield from funding', specs: ['interest: on borrowed SOL', 'positive → compounds', 'negative → from collateral', 'staker yield: 50% net', 'claim: permissionless'],
+            { name: 'composting', desc: 'Borrowing costs', specs: ['interest: ~99% APR', 'on borrowed SOL only', 'deducted from collateral', 'monitored by agent', 'auto-close if unprofitable'],
               detail: 'Lavarage charges interest on the borrowed portion of your position (currently ~99% APR). This is the cost of leverage. When FART goes up, your gains outpace the interest. When it goes sideways, interest eats into your collateral. The agent monitors this and will close positions if the cost exceeds projected returns.' },
             { name: 'chain_reaction', desc: 'Liquidation recovery', specs: ['liquidation → 1h cooldown', 're-entry: market order', 'uses: remaining + new fees', 'reset leverage: 3×', 'community vote to escalate'],
               detail: 'If FART drops hard enough to liquidate the position, the agent doesn\'t panic. It waits 1 hour for volatility to settle, then re-enters with whatever collateral remains plus any new fees that came in during cooldown. Re-entry uses 3× leverage (lower than the normal 5×) for safety. Community can vote to increase leverage back up once conditions stabilize.' },
