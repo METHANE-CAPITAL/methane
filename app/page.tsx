@@ -39,22 +39,27 @@ export default function Home() {
           <span className="status-dot" />
           <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           {[
             { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
             { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
             { label: 'drift', href: 'https://app.drift.trade/perpetuals/FART-PERP', icon: '/icons/drift.png' },
-            { label: 'x', href: '#', icon: '/icons/x.png' },
           ].map(l => (
             <a key={l.label} href={l.href}
                target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
-               style={{ color: 'var(--fg-dim)', fontSize: 10, letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', transition: 'color 0.2s' }}
+               style={{ color: 'var(--fg-dim)', fontSize: 11, letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', transition: 'color 0.2s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
                onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
-              <img src={l.icon} alt={l.label} width={16} height={16} style={{ borderRadius: 3 }} />
-              <span className="hide-mobile">{l.label}</span>
+              <img src={l.icon} alt={l.label} width={18} height={18} style={{ borderRadius: 3 }} />
+              {l.label}
             </a>
           ))}
+          <a href="#" style={{ color: 'var(--fg-dim)', display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', fontSize: 11, transition: 'color 0.2s' }}
+             onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+             onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            twitter
+          </a>
         </div>
       </nav>
 
