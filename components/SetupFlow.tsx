@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 
-const AGENT_WALLET = 'FXf5jhkD7HoyrRrbtWfN29YZGVTQDnDSqaQVdZfQ6TKd';
 const FEE_PROGRAM = 'pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ';
 const RPC = 'https://mainnet.helius-rpc.com/?api-key=REDACTED_HELIUS_KEY';
 
@@ -112,13 +111,26 @@ async function checkFeeSharing(mint: string) {
   }
 }
 
+interface VaultResult {
+  vaultAddress?: string;
+  pending?: boolean;
+  existing?: boolean;
+  message?: string;
+  vault?: { vaultAddress: string; tokenSymbol: string };
+}
+
 export default function SetupFlow() {
   const [mint, setMint] = useState('');
+  const [tokenName, setTokenName] = useState('');
+  const [tokenSymbol, setTokenSymbol] = useState('');
+  const [creatorWallet, setCreatorWallet] = useState('');
   const [step, setStep] = useState(1);
   const [mintResult, setMintResult] = useState<{ valid: boolean; message: string; decimals?: number } | null>(null);
   const [feeResult, setFeeResult] = useState<{ valid: boolean; message: string } | null>(null);
   const [validating, setValidating] = useState(false);
-  const [pct, setPct] = useState('100');
+  const [registering, setRegistering] = useState(false);
+  const [vaultResult, setVaultResult] = useState<VaultResult | null>(null);
+  const [leverage, setLeverage] = useState('5');
 
   const doValidate = useCallback(async () => {
     if (!mint.trim() || mint.trim().length < 32) {
@@ -137,7 +149,34 @@ export default function SetupFlow() {
     setValidating(false);
   }, [mint]);
 
+  const doRegister = useCallback(async () => {
+    setRegistering(true);
+    try {
+      const res = await fetch('/api/vault/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenMint: mint.trim(),
+          tokenName: tokenName.trim() || 'Unknown',
+          tokenSymbol: tokenSymbol.trim() || 'TKN',
+          creatorWallet: creatorWallet.trim(),
+          leverage: Number(leverage) || 5,
+        }),
+      });
+      const data = await res.json();
+      setVaultResult(data);
+
+      if (data.vault?.vaultAddress || data.pending) {
+        setStep(3);
+      }
+    } catch {
+      setVaultResult({ message: 'Registration failed — try again' });
+    }
+    setRegistering(false);
+  }, [mint, tokenName, tokenSymbol, creatorWallet, leverage]);
+
   const canProceed = mintResult?.valid === true;
+  const vaultAddress = vaultResult?.vault?.vaultAddress;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -177,7 +216,7 @@ export default function SetupFlow() {
           {feeResult && <StatusBadge valid={feeResult.valid} message={feeResult.message} />}
           {feeResult && !feeResult.valid && (
             <div style={{ padding: '8px 12px', fontSize: 11, color: 'var(--fg-dim)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
-              <strong style={{ color: 'var(--accent)' }}>tip:</strong> go to pump.fun → your token → fee sharing. add the agent wallet as a recipient, then come back and verify again.
+              <strong style={{ color: 'var(--accent)' }}>tip:</strong> go to pump.fun → your token → fee sharing. set it up there first, then come back and verify again.
             </div>
           )}
           {canProceed && (
@@ -192,84 +231,106 @@ export default function SetupFlow() {
         </div>
       </StepPanel>
 
-      {/* Step 2: Configure routing */}
-      <StepPanel n={2} title="CONFIGURE FEE ROUTING" active={step >= 2} done={step > 2}>
+      {/* Step 2: Register vault */}
+      <StepPanel n={2} title="REGISTER YOUR VAULT" active={step >= 2} done={step > 2}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 12, color: 'var(--fg-dim)' }}>
-            Set what percentage of creator fees to route to the shared FART vault. The rest stays in your wallet.
+            We&apos;ll create a dedicated vault wallet for your project. Your fees go there, and only there. Fully isolated from every other project.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: 'var(--fg-dark)' }}>agent wallet:</span>
-              <CopyButton text={AGENT_WALLET} label={AGENT_WALLET.slice(0, 8) + '...' + AGENT_WALLET.slice(-4)} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div>
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em', marginBottom: 4 }}>TOKEN NAME</div>
+              <input value={tokenName} onChange={e => setTokenName(e.target.value)} placeholder="e.g. My Token"
+                style={{ width: '100%', padding: '8px 12px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }} />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: 'var(--fg-dark)' }}>fee routing:</span>
-              <input
-                value={pct} onChange={e => setPct(e.target.value)}
-                style={{
-                  width: 60, padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', textAlign: 'right',
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none',
-                }}
-              />
-              <span style={{ fontSize: 11, color: 'var(--fg-dark)' }}>% → FART vault</span>
+            <div>
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em', marginBottom: 4 }}>SYMBOL</div>
+              <input value={tokenSymbol} onChange={e => setTokenSymbol(e.target.value)} placeholder="e.g. TKN"
+                style={{ width: '100%', padding: '8px 12px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }} />
             </div>
           </div>
 
-          <div style={{ fontSize: 11, color: 'var(--fg-dark)', marginTop: 4 }}>
-            <div>› add the agent wallet as a fee-sharing recipient on pump.fun</div>
-            <div>› set the share percentage to <span style={{ color: 'var(--accent)' }}>{pct}%</span></div>
-            <div>› the agent will auto-claim and open a leveraged FART long on Lavarage</div>
+          <div>
+            <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em', marginBottom: 4 }}>YOUR WALLET (creator / fee source)</div>
+            <input value={creatorWallet} onChange={e => setCreatorWallet(e.target.value)} placeholder="your wallet address..."
+              style={{ width: '100%', padding: '8px 12px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }} />
           </div>
 
-          <button onClick={() => setStep(3)} style={{
-            padding: '8px 16px', fontSize: 11, fontWeight: 700, fontFamily: 'inherit', alignSelf: 'flex-start',
-            background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-med)',
-            color: 'var(--accent)', cursor: 'pointer',
-          }}>
-            next →
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>LEVERAGE</div>
+            <select value={leverage} onChange={e => setLeverage(e.target.value)}
+              style={{ padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }}>
+              {['2', '3', '5', '7.5', '10'].map(v => (
+                <option key={v} value={v}>{v}×</option>
+              ))}
+            </select>
+            <span style={{ fontSize: 10, color: 'var(--fg-dark)' }}>higher = more risk + more upside</span>
+          </div>
+
+          <button onClick={doRegister} disabled={registering || !creatorWallet.trim()}
+            style={{
+              padding: '10px 20px', fontSize: 11, fontWeight: 700, fontFamily: 'inherit', alignSelf: 'flex-start',
+              background: registering ? 'rgba(255,255,255,0.03)' : 'rgba(90,170,69,0.1)',
+              border: `1px solid ${registering ? 'var(--border)' : 'rgba(90,170,69,0.3)'}`,
+              color: registering ? 'var(--fg-dim)' : 'var(--green)', cursor: registering ? 'wait' : 'pointer',
+            }}>
+            {registering ? 'registering...' : 'create my vault →'}
           </button>
+
+          {vaultResult?.message && !vaultResult.vault && (
+            <div style={{ fontSize: 11, color: 'var(--fg-dim)' }}>{vaultResult.message}</div>
+          )}
         </div>
       </StepPanel>
 
       {/* Step 3: Live */}
-      <StepPanel n={3} title="YOU'RE LIVE" active={step >= 3} done={false}>
+      <StepPanel n={3} title="YOUR VAULT IS READY" active={step >= 3} done={false}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ padding: '12px 14px', background: 'rgba(90,170,69,0.04)', border: '1px solid rgba(90,170,69,0.2)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span className="status-dot" />
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)' }}>Pipeline active</span>
-            </div>
-            <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
-              The agent is monitoring your creator wallet. When fees accumulate above 0.05 SOL, it will auto-claim → deposit SOL collateral → open 5× FART long on Lavarage.
-            </p>
-          </div>
+          {vaultAddress ? (
+            <>
+              <div style={{ padding: '12px 14px', background: 'rgba(90,170,69,0.04)', border: '1px solid rgba(90,170,69,0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <span className="status-dot" />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)' }}>Vault created</span>
+                </div>
+                <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em', marginBottom: 4 }}>YOUR VAULT ADDRESS — POINT FEES HERE</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <code style={{ fontSize: 12, color: 'var(--white)', wordBreak: 'break-all' }}>{vaultAddress}</code>
+                  <CopyButton text={vaultAddress} label="copy" />
+                </div>
+              </div>
 
-          <div style={{ fontSize: 11, color: 'var(--fg-dim)' }}>
-            <strong style={{ color: 'var(--accent)' }}>what happens next:</strong>
-            <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <div>→ fees claimed every 15 min</div>
-              <div>→ 70% → FART long, 30% → buyback + burn</div>
-              <div>→ your PnL shown on the live dashboard</div>
-              <div>→ embed the widget on your site (coming soon)</div>
-            </div>
-          </div>
+              <div style={{ fontSize: 11, color: 'var(--fg-dim)' }}>
+                <strong style={{ color: 'var(--accent)' }}>next steps:</strong>
+                <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <div>1. Go to pump.fun → your token → fee sharing</div>
+                  <div>2. Add <span style={{ color: 'var(--white)', fontFamily: 'monospace' }}>{vaultAddress.slice(0, 8)}...{vaultAddress.slice(-4)}</span> as recipient</div>
+                  <div>3. Set the share percentage (we recommend 50-100%)</div>
+                  <div>4. Done — the agent will start processing on the next cycle</div>
+                </div>
+              </div>
 
-          {mint && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
-              <a href={`https://solscan.io/token/${mint}`} target="_blank" rel="noopener"
-                style={{ fontSize: 10, padding: '5px 10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', color: 'var(--fg-dim)', textDecoration: 'none' }}>
-                solscan ↗
+              <a href={`/vault/${mint}`}
+                style={{
+                  display: 'inline-block', padding: '10px 20px', fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                  background: 'rgba(90,170,69,0.1)', border: '1px solid rgba(90,170,69,0.3)', color: 'var(--green)',
+                }}>
+                go to your vault dashboard →
               </a>
-              <a href={`https://dexscreener.com/solana/${mint}`} target="_blank" rel="noopener"
-                style={{ fontSize: 10, padding: '5px 10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', color: 'var(--fg-dim)', textDecoration: 'none' }}>
-                dexscreener ↗
-              </a>
-              <a href={`https://solscan.io/account/${AGENT_WALLET}`} target="_blank" rel="noopener"
-                style={{ fontSize: 10, padding: '5px 10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', color: 'var(--fg-dim)', textDecoration: 'none' }}>
-                agent wallet ↗
+            </>
+          ) : vaultResult?.pending ? (
+            <div style={{ padding: '12px 14px', background: 'rgba(255,200,0,0.04)', border: '1px solid rgba(255,200,0,0.2)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', marginBottom: 6 }}>Registration queued</div>
+              <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
+                Your vault will be ready within 15 minutes (next agent cycle). Come back and check your vault dashboard at:
+              </p>
+              <a href={`/vault/${mint}`} style={{ fontSize: 11, color: 'var(--accent)', marginTop: 6, display: 'inline-block' }}>
+                /vault/{mint.slice(0, 8)}... →
               </a>
             </div>
+          ) : (
+            <div style={{ fontSize: 11, color: 'var(--fg-dim)' }}>Setting up your vault...</div>
           )}
         </div>
       </StepPanel>
