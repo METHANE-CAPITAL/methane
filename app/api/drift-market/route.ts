@@ -62,9 +62,10 @@ export async function GET() {
       PRICE_PRECISION
     );
 
+    // lastFundingRate is stored in PRICE_PRECISION (1e6), not BUFFER (1e3)
     const lastFundingRate = convertToNumber(
       perpMarket.amm.lastFundingRate,
-      FUNDING_RATE_BUFFER_PRECISION
+      PRICE_PRECISION
     );
 
     const openInterestBase = convertToNumber(
