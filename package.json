@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@drift-labs/sdk": "^2.155.0",
+    "@solana/web3.js": "^1.98.4",
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"
