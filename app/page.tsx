@@ -2,9 +2,9 @@ import FartClouds from '@/components/FartClouds';
 import StinkDivider from '@/components/StinkDivider';
 import GasLog from '@/components/GasLog';
 import FartChart from '@/components/FartChart';
-import PressureGauge from '@/components/PressureGauge';
 import MoleculeViz from '@/components/MoleculeViz';
 import PositionDashboard from '@/components/PositionDashboard';
+import { MethaneAscii, GPaaSAscii, FartPerpAscii } from '@/components/AsciiArt';
 import {
   GasCloudIcon, FlameIcon, SkullIcon, GaugeIcon,
   ChartUpIcon, RecycleIcon, BombIcon, LeafIcon,
@@ -67,15 +67,14 @@ export default function Home() {
       </nav>
 
       {/* 1. HERO */}
-      <section className="relative z-10 pt-20 pb-12 md:pt-28 md:pb-16">
+      <section className="relative z-10 pt-16 pb-12 md:pt-24 md:pb-16">
         <div className="max-w-[1100px] mx-auto px-6 text-center">
-          <GasCloudIcon size={48} className="text-stink/40 mx-auto mb-5 animate-wobble" />
-          <h1 className="font-bungee text-4xl md:text-6xl lg:text-7xl text-stink stink-glow leading-none">
-            $METHANE
-          </h1>
-          <p className="mt-3 text-base md:text-lg font-display font-bold text-gas/70">
-            Gas Pipeline as a Service
-          </p>
+          <div className="flex justify-center mb-4">
+            <MethaneAscii className="text-stink stink-glow" />
+          </div>
+          <div className="flex justify-center mb-2">
+            <GPaaSAscii className="text-gas/50" />
+          </div>
           <p className="mt-3 text-sm text-stink/35 max-w-lg mx-auto leading-relaxed">
             Every dollar of creator fees is automatically swapped to USDC and dumped into a{' '}
             <span className="text-stink font-semibold">5x leveraged Fartcoin long</span>{' '}
@@ -94,12 +93,12 @@ export default function Home() {
       {/* 2. WHY FART — split: copy + molecule viz */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Left: thesis */}
             <div>
-              <h2 className="font-bungee text-xl md:text-2xl text-gas stink-glow mb-3">
-                Why Fartcoin?
-              </h2>
+              <div className="flex mb-3">
+                <FartPerpAscii className="text-gas/60" />
+              </div>
               <p className="text-sm text-stink/40 leading-relaxed mb-3">
                 <span className="text-stink font-semibold">Fartcoin</span> is one of the most iconic tokens on Solana.
                 $200M+ market cap. Listed everywhere. A cultural monument to on-chain degeneracy.
@@ -110,11 +109,6 @@ export default function Home() {
                 When FART pumps, we pump harder.
               </p>
               <p className="text-xs text-fart-tan/40 italic">&quot;Others talk about farts. We leverage them.&quot;</p>
-            </div>
-
-            {/* Center: molecule */}
-            <div className="hidden md:flex flex-col items-center justify-center fart-cloud rounded-full p-4">
-              <MoleculeViz />
             </div>
 
             {/* Right: data card */}
@@ -155,7 +149,8 @@ export default function Home() {
       {/* 3. HOW IT WORKS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
-          <h2 className="font-bungee text-xl md:text-2xl text-stink mb-2">How It Works</h2>
+          <pre className="font-mono text-stink/70 text-xs mb-1 select-none">{'// HOW_IT_WORKS.sol'}</pre>
+          <h2 className="font-bungee text-xl md:text-2xl text-stink mb-1">How It Works</h2>
           <p className="text-sm text-stink/25 mb-6">Five steps. Every 15 minutes. Fully autonomous.</p>
 
           <div className="gas-border">
@@ -213,6 +208,7 @@ export default function Home() {
       {/* 5. FOR YOUR TOKEN — GPaaS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
+          <pre className="font-mono text-stink/70 text-xs mb-1 select-none">{'// GAS_PIPELINE.service'}</pre>
           <h2 className="font-bungee text-xl md:text-2xl text-stink mb-2">For Your Token</h2>
           <p className="text-sm text-stink/30 mb-6 max-w-xl">
             $METHANE isn&apos;t just a token — it&apos;s infrastructure. Any project on Solana can route creator fees
@@ -303,6 +299,7 @@ export default function Home() {
       {/* 6. PRESSURE + MECHANICS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
+          <pre className="font-mono text-stink/70 text-xs mb-1 select-none">{'// MECHANICS.config'}</pre>
           <h2 className="font-bungee text-lg md:text-xl text-stink mb-6">The Mechanics</h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
