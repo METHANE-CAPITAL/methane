@@ -57,10 +57,8 @@ export default function PlasmaCloud() {
     let raf: number;
 
     function resize() {
-      const container = canvas.parentElement;
-      if (!container) return;
-      w = container.clientWidth;
-      h = container.clientHeight;
+      w = window.innerWidth;
+      h = window.innerHeight;
       canvas.width = w;
       canvas.height = h;
     }
@@ -68,9 +66,10 @@ export default function PlasmaCloud() {
     function init() {
       resize();
       particles = [];
-      const count = Math.floor((w * h) / (65 * 65));
+      // Sparse particles across viewport
+      const count = Math.floor((w * h) / (100 * 100));
       for (let i = 0; i < count; i++) {
-        const baseSize = 12 + Math.random() * 16;
+        const baseSize = 6 + Math.random() * 8;
         particles.push({
           pos: new Vec(Math.random() * w, Math.random() * h),
           vel: Vec.random(0.4),
@@ -108,13 +107,13 @@ export default function PlasmaCloud() {
       if (p.pos.y + r > h || p.pos.y - r < 0) p.vel.y = -p.vel.y;
     }
 
-    // Color mapping — bright enough to survive contrast filter
+    // Color mapping — very subtle, just above background
     function getColor(size: number): string {
-      const t = Math.max(0, Math.min(1, (size - 12) / 50));
-      // Small: dim green. Large: bright white-green
-      const r = Math.floor(30 + t * 180);
-      const g = Math.floor(50 + t * 200);
-      const b = Math.floor(25 + t * 140);
+      const t = Math.max(0, Math.min(1, (size - 6) / 30));
+      // Small: barely visible. Large (near mouse): soft green glow
+      const r = Math.floor(18 + t * 40);
+      const g = Math.floor(22 + t * 55);
+      const b = Math.floor(16 + t * 30);
       return `rgb(${r},${g},${b})`;
     }
 
@@ -123,10 +122,10 @@ export default function PlasmaCloud() {
 
       for (const p of particles) {
         // Mouse proximity → grow
-        if (Vec.distSq(p.pos, mouse as any) < 20000) {
-          p.size = Math.min(65, p.size + 0.8);
+        if (Vec.distSq(p.pos, mouse as any) < 25000) {
+          p.size = Math.min(40, p.size + 0.5);
         } else {
-          p.size = Math.max(p.baseSize, p.size - 0.5);
+          p.size = Math.max(p.baseSize, p.size - 0.3);
         }
 
         // Behaviors
@@ -148,50 +147,41 @@ export default function PlasmaCloud() {
     init();
     tick();
 
-    const handleResize = () => { resize(); };
+    const handleResize = () => { init(); };
     const handleMouse = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      mouse = { x: e.clientX, y: e.clientY };
     };
     const handleLeave = () => { mouse = { x: -9999, y: -9999 }; };
 
     window.addEventListener('resize', handleResize);
-    canvas.addEventListener('mousemove', handleMouse);
-    canvas.addEventListener('mouseleave', handleLeave);
+    window.addEventListener('mousemove', handleMouse);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', handleResize);
-      canvas.removeEventListener('mousemove', handleMouse);
-      canvas.removeEventListener('mouseleave', handleLeave);
+      window.removeEventListener('mousemove', handleMouse);
     };
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: 280, overflow: 'hidden' }}>
-      {/* Background layer to make the contrast trick work */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: '#0a0f0a',
-        filter: 'contrast(3)',
-      }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: '100%',
-            height: '100%',
-            filter: 'blur(20px)',
-          }}
-        />
-      </div>
-      {/* Subtle label */}
-      <div style={{
-        position: 'absolute', bottom: 12, left: 0, right: 0,
-        textAlign: 'center', fontSize: 9, letterSpacing: '0.15em',
-        color: 'rgba(255,255,255,0.15)', zIndex: 1,
-      }}>
-        METHANE GAS CLOUD · MOVE YOUR MOUSE
-      </div>
+    <div style={{
+      position: 'fixed', inset: 0,
+      pointerEvents: 'none',
+      zIndex: 0,
+      background: 'transparent',
+      filter: 'contrast(2.5)',
+    }}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%',
+          height: '100%',
+          filter: 'blur(18px)',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }}
+      />
     </div>
   );
 }

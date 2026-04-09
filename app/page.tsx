@@ -8,7 +8,7 @@ import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
-import PlasmaCloud from '@/components/PlasmaCloud';
+
 
 
 function useScrollReveal() {
@@ -80,11 +80,6 @@ export default function Home() {
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.15em', marginBottom: 4 }}>CONTRACT ADDRESS</div>
           <div style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, letterSpacing: '0.03em' }}>TBD — LAUNCHING SOON</div>
         </div>
-      </section>
-
-      {/* PLASMA CLOUD */}
-      <section className="reveal" style={{ marginBottom: 32 }}>
-        <PlasmaCloud />
       </section>
 
       {/* ═══ § 01 — THE THESIS ═══ */}
