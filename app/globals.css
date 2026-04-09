@@ -1,26 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0a0a;
+  --toxic: #39FF14;
+  --toxic-dim: #2bcc10;
+  --hazmat: #FFD700;
+  --danger: #FF3333;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: #e0e0e0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Hazmat stripe pattern */
+.hazmat-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 215, 0, 0.08) 10px,
+    rgba(255, 215, 0, 0.08) 20px
+  );
+}
+
+/* Warning tape border */
+.warning-tape {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hazmat),
+    var(--hazmat) 10px,
+    #000 10px,
+    #000 20px
+  );
+  height: 4px;
+}
+
+/* Toxic glow effect */
+.toxic-glow {
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.15),
+              0 0 40px rgba(57, 255, 20, 0.05);
+}
+
+.toxic-text-glow {
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5),
+               0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+/* Pressure gauge fill animation */
+@keyframes pressureFill {
+  from { width: 0%; }
+  to { width: var(--pressure); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Selection */
+::selection {
+  background: rgba(57, 255, 20, 0.3);
+  color: #fff;
 }
