@@ -108,13 +108,13 @@ export default function PlasmaCloud() {
       if (p.pos.y + r > h || p.pos.y - r < 0) p.vel.y = -p.vel.y;
     }
 
-    // Color mapping — site palette: muted green → bright white-green
+    // Color mapping — bright enough to survive contrast filter
     function getColor(size: number): string {
-      const t = Math.max(0, Math.min(1, (size - 8) / 55));
-      // Small: muted green (50,80,50). Large: bright green-white (180,230,170)
-      const r = Math.floor(50 + t * 130);
-      const g = Math.floor(80 + t * 150);
-      const b = Math.floor(50 + t * 120);
+      const t = Math.max(0, Math.min(1, (size - 12) / 50));
+      // Small: dim green. Large: bright white-green
+      const r = Math.floor(30 + t * 180);
+      const g = Math.floor(50 + t * 200);
+      const b = Math.floor(25 + t * 140);
       return `rgb(${r},${g},${b})`;
     }
 
@@ -172,15 +172,15 @@ export default function PlasmaCloud() {
       {/* Background layer to make the contrast trick work */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'var(--bg)',
-        filter: 'contrast(1.8)',
+        background: '#0a0f0a',
+        filter: 'contrast(3)',
       }}>
         <canvas
           ref={canvasRef}
           style={{
             width: '100%',
             height: '100%',
-            filter: 'blur(25px)',
+            filter: 'blur(20px)',
           }}
         />
       </div>
