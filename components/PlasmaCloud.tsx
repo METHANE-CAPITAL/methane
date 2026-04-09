@@ -68,9 +68,9 @@ export default function PlasmaCloud() {
     function init() {
       resize();
       particles = [];
-      const count = Math.floor((w * h) / (75 * 75));
+      const count = Math.floor((w * h) / (65 * 65));
       for (let i = 0; i < count; i++) {
-        const baseSize = 8 + Math.random() * 12;
+        const baseSize = 12 + Math.random() * 16;
         particles.push({
           pos: new Vec(Math.random() * w, Math.random() * h),
           vel: Vec.random(0.4),
@@ -108,13 +108,13 @@ export default function PlasmaCloud() {
       if (p.pos.y + r > h || p.pos.y - r < 0) p.vel.y = -p.vel.y;
     }
 
-    // Color mapping — site palette: dark greys → white with green tint
+    // Color mapping — site palette: muted green → bright white-green
     function getColor(size: number): string {
-      const t = Math.max(0, Math.min(1, (size - 8) / 60)); // 0 = small, 1 = large (near mouse)
-      // Small: dark grey (40,42,40). Large: greenish white (200,220,200)
-      const r = Math.floor(40 + t * 160);
-      const g = Math.floor(42 + t * 178);
-      const b = Math.floor(40 + t * 140);
+      const t = Math.max(0, Math.min(1, (size - 8) / 55));
+      // Small: muted green (50,80,50). Large: bright green-white (180,230,170)
+      const r = Math.floor(50 + t * 130);
+      const g = Math.floor(80 + t * 150);
+      const b = Math.floor(50 + t * 120);
       return `rgb(${r},${g},${b})`;
     }
 
