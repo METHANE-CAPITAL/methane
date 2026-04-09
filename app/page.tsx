@@ -34,7 +34,7 @@ export default function Home() {
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px' }}>
 
       {/* NAV */}
-      <nav className="flex items-center justify-between py-4" style={{ fontSize: 10, borderBottom: '1px solid var(--border)' }}>
+      <nav className="flex items-center justify-between" style={{ fontSize: 10, borderBottom: '1px solid var(--border)', padding: '16px 0', marginBottom: 8 }}>
         <div className="flex items-center gap-3">
           <span className="status-dot" />
           <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
