@@ -68,7 +68,7 @@ export default function Home() {
         </div>
 
         <div className="reveal reveal-d1" style={{ fontSize: 10, letterSpacing: '0.3em', color: 'var(--fg-dim)', fontWeight: 500, textTransform: 'uppercase', marginBottom: 16 }}>
-          Gas Pipeline as a Service
+          Gas as a Service
         </div>
 
         <p className="reveal reveal-d2" style={{ color: 'var(--fg-dark)', fontSize: 12, maxWidth: 560, margin: '0 auto', lineHeight: 1.8 }}>
@@ -347,7 +347,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer style={{ borderTop: '1px solid var(--border)', padding: '20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 9, color: 'var(--fg-dark)' }}>
-        <span>$METHANE · gas pipeline as a service · 2026</span>
+        <span>$METHANE · gas as a service · 2026</span>
         <div style={{ display: 'flex', gap: 16 }}>
           {['pump.fun', 'dexscreener', 'drift', 'solscan'].map(l => (
             <a key={l} href="#" className="trace-link" style={{ color: 'var(--fg-dark)' }}>{l}</a>
