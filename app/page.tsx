@@ -10,6 +10,7 @@ import FlywheelDiagram from '@/components/FlywheelDiagram';
 import GasLog from '@/components/GasLog';
 import SetupFlow from '@/components/SetupFlow';
 import { MethaneAscii, FartPerpsAscii } from '@/components/AsciiArt';
+import Nav from '@/components/Nav';
 
 
 
@@ -33,36 +34,7 @@ export default function Home() {
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px' }}>
 
-      {/* NAV */}
-      <nav className="flex items-center justify-between" style={{ fontSize: 10, borderBottom: '1px solid var(--border)', padding: '16px 0', marginBottom: 8 }}>
-        <div className="flex items-center gap-3">
-          <span className="status-dot" />
-          <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>$METHANE</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          {[
-            { label: 'vaults', href: '/vaults', icon: '' },
-            { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
-            { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
-            { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/lavarage.png' },
-          ].map(l => (
-            <a key={l.label} href={l.href}
-               target={l.href !== '#' ? '_blank' : undefined} rel={l.href !== '#' ? 'noopener' : undefined}
-               style={{ color: 'var(--fg-dim)', fontSize: 11, letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', transition: 'color 0.2s' }}
-               onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-               onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
-              {l.icon && <img src={l.icon} alt={l.label} width={18} height={18} style={{ borderRadius: 3 }} />}
-              {l.label}
-            </a>
-          ))}
-          <a href="#" style={{ color: 'var(--fg-dim)', display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', fontSize: 11, transition: 'color 0.2s' }}
-             onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-             onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            twitter
-          </a>
-        </div>
-      </nav>
+      <Nav />
 
       {/* ═══ HERO ═══ */}
       <section style={{ padding: '60px 0 40px' }} className="text-center">
@@ -356,7 +328,7 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 06 — PLUG IN ═══ */}
-      <div className="section-label" style={{ marginTop: 40 }}><span>§ 06 · PLUG IN</span></div>
+      <div id="plug-in" className="section-label" style={{ marginTop: 40 }}><span>§ 06 · PLUG IN</span></div>
 
       <section className="reveal" style={{ paddingBottom: 48 }}>
         <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 6 }}>Ready to plug in? Here&apos;s how.</h2>

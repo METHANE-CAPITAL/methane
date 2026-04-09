@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Nav from '@/components/Nav';
 
 interface VaultSummary {
   tokenMint: string;
@@ -34,15 +35,7 @@ export default function VaultsPage() {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
-      {/* Nav */}
-      <nav style={{ fontSize: 10, borderBottom: '1px solid var(--border)', padding: '16px 0', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/" style={{ color: 'var(--fg-dim)', textDecoration: 'none', fontSize: 11 }}>← $METHANE</a>
-          <span style={{ color: 'var(--border)' }}>·</span>
-          <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>ALL VAULTS</span>
-        </div>
-        <span style={{ fontSize: 9, color: 'var(--fg-dark)' }}>{vaults.length} registered</span>
-      </nav>
+      <Nav />
 
       {/* Header */}
       <section style={{ padding: '40px 0 32px' }}>

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import VaultActions from '@/components/VaultActions';
 import VaultActivity from '@/components/VaultActivity';
+import Nav from '@/components/Nav';
 
 interface Position {
   address: string;
@@ -162,24 +163,18 @@ export default function VaultPage() {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
-      {/* Nav */}
-      <nav style={{ fontSize: 10, borderBottom: '1px solid var(--border)', padding: '16px 0', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/" style={{ color: 'var(--fg-dim)', textDecoration: 'none', fontSize: 11 }}>← $METHANE</a>
-          <span style={{ color: 'var(--border)' }}>·</span>
-          <span style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.1em' }}>{v.tokenSymbol} VAULT</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href={`https://solscan.io/account/${v.vaultAddress}`} target="_blank" rel="noopener"
-            style={{ color: 'var(--fg-dim)', fontSize: 10, textDecoration: 'none' }}>
-            solscan ↗
-          </a>
-          <a href="https://lavarage.xyz" target="_blank" rel="noopener"
-            style={{ color: 'var(--fg-dim)', fontSize: 10, textDecoration: 'none' }}>
-            lavarage ↗
-          </a>
-        </div>
-      </nav>
+      <Nav />
+
+      {/* Breadcrumb */}
+      <div style={{ fontSize: 10, color: 'var(--fg-dark)', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <a href="/vaults" style={{ color: 'var(--fg-dim)', textDecoration: 'none' }}>vaults</a>
+        <span>›</span>
+        <span style={{ color: 'var(--accent)' }}>${v.tokenSymbol}</span>
+        <span style={{ marginLeft: 'auto', display: 'flex', gap: 12 }}>
+          <a href={`https://solscan.io/account/${v.vaultAddress}`} target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)', textDecoration: 'none' }}>solscan ↗</a>
+          <a href="https://lavarage.xyz" target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)', textDecoration: 'none' }}>lavarage ↗</a>
+        </span>
+      </div>
 
       {/* Header */}
       <section style={{ padding: '40px 0 32px' }}>
