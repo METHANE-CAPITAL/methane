@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 const FEE_PROGRAM = 'pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ';
 const RPC = 'https://mainnet.helius-rpc.com/?api-key=REDACTED_HELIUS_KEY';
@@ -120,10 +122,10 @@ interface VaultResult {
 }
 
 export default function SetupFlow() {
+  const { publicKey, signMessage, connected } = useWallet();
   const [mint, setMint] = useState('');
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
-  const [creatorWallet, setCreatorWallet] = useState('');
   const [step, setStep] = useState(1);
   const [mintResult, setMintResult] = useState<{ valid: boolean; message: string; decimals?: number } | null>(null);
   const [feeResult, setFeeResult] = useState<{ valid: boolean; message: string } | null>(null);
@@ -150,8 +152,18 @@ export default function SetupFlow() {
   }, [mint]);
 
   const doRegister = useCallback(async () => {
+    if (!publicKey || !signMessage) {
+      setVaultResult({ message: 'Connect your wallet first' });
+      return;
+    }
     setRegistering(true);
     try {
+      // Sign verification message
+      const msg = `methane:register:${mint.trim()}:${Date.now()}`;
+      const msgBytes = new TextEncoder().encode(msg);
+      const sig = await signMessage(msgBytes);
+      const sigB64 = btoa(String.fromCharCode(...sig));
+
       const res = await fetch('/api/vault/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,8 +171,10 @@ export default function SetupFlow() {
           tokenMint: mint.trim(),
           tokenName: tokenName.trim() || 'Unknown',
           tokenSymbol: tokenSymbol.trim() || 'TKN',
-          creatorWallet: creatorWallet.trim(),
+          creatorWallet: publicKey.toBase58(),
           leverage: Number(leverage) || 5,
+          signature: sigB64,
+          message: msg,
         }),
       });
       const data = await res.json();
@@ -169,11 +183,11 @@ export default function SetupFlow() {
       if (data.vault?.vaultAddress || data.pending) {
         setStep(3);
       }
-    } catch {
-      setVaultResult({ message: 'Registration failed — try again' });
+    } catch (err: any) {
+      setVaultResult({ message: err?.message || 'Registration failed — try again' });
     }
     setRegistering(false);
-  }, [mint, tokenName, tokenSymbol, creatorWallet, leverage]);
+  }, [mint, tokenName, tokenSymbol, publicKey, signMessage, leverage]);
 
   const canProceed = mintResult?.valid === true;
   const vaultAddress = vaultResult?.vault?.vaultAddress;
@@ -235,8 +249,23 @@ export default function SetupFlow() {
       <StepPanel n={2} title="REGISTER YOUR VAULT" active={step >= 2} done={step > 2}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 12, color: 'var(--fg-dim)' }}>
-            We&apos;ll create a dedicated vault wallet for your project. Your fees go there, and only there. Fully isolated from every other project.
+            Connect your wallet and we&apos;ll create a dedicated vault for your project. Fully isolated from every other project.
           </p>
+
+          {/* Wallet connect */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <WalletMultiButton style={{
+              fontSize: 11, fontFamily: 'inherit', height: 36, padding: '0 16px',
+              background: connected ? 'rgba(90,170,69,0.1)' : 'rgba(255,255,255,0.06)',
+              border: `1px solid ${connected ? 'rgba(90,170,69,0.3)' : 'var(--border-med)'}`,
+              borderRadius: 0, color: connected ? 'var(--green)' : 'var(--accent)',
+            }} />
+            {connected && publicKey && (
+              <span style={{ fontSize: 10, color: 'var(--fg-dim)', fontFamily: 'monospace' }}>
+                {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-4)}
+              </span>
+            )}
+          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div>
@@ -251,24 +280,18 @@ export default function SetupFlow() {
             </div>
           </div>
 
-          <div>
-            <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em', marginBottom: 4 }}>YOUR WALLET (creator / fee source)</div>
-            <input value={creatorWallet} onChange={e => setCreatorWallet(e.target.value)} placeholder="your wallet address..."
-              style={{ width: '100%', padding: '8px 12px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }} />
-          </div>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>LEVERAGE</div>
             <select value={leverage} onChange={e => setLeverage(e.target.value)}
               style={{ padding: '6px 10px', fontSize: 12, fontFamily: 'inherit', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', color: 'var(--fg)', outline: 'none' }}>
-              {['2', '3', '5', '7.5', '10'].map(v => (
+              {['2', '3', '5', '7.5'].map(v => (
                 <option key={v} value={v}>{v}×</option>
               ))}
             </select>
-            <span style={{ fontSize: 10, color: 'var(--fg-dark)' }}>higher = more risk + more upside</span>
+            <span style={{ fontSize: 10, color: 'var(--fg-dark)' }}>max 7.5× on Lavarage</span>
           </div>
 
-          <button onClick={doRegister} disabled={registering || !creatorWallet.trim()}
+          <button onClick={doRegister} disabled={registering || !connected}
             style={{
               padding: '10px 20px', fontSize: 11, fontWeight: 700, fontFamily: 'inherit', alignSelf: 'flex-start',
               background: registering ? 'rgba(255,255,255,0.03)' : 'rgba(90,170,69,0.1)',

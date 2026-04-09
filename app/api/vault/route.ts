@@ -97,6 +97,7 @@ export async function GET(request: Request) {
         tokenName: vault.tokenName,
         tokenSymbol: vault.tokenSymbol,
         vaultAddress: vault.vaultAddress,
+        creatorWallet: vault.creatorWallet,
         createdAt: vault.createdAt,
         status: vault.status,
         leverage: vault.leverage,

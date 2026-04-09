@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import VaultActions from '@/components/VaultActions';
 
 interface Position {
   address: string;
@@ -24,6 +25,7 @@ interface VaultData {
     tokenName: string;
     tokenSymbol: string;
     vaultAddress: string;
+    creatorWallet: string;
     createdAt: number;
     status: string;
     leverage: number;
@@ -236,6 +238,21 @@ export default function VaultPage() {
           </div>
         </section>
       )}
+
+      <hr className="divider" />
+
+      {/* Vault Actions */}
+      <div className="section-label" style={{ marginTop: 24 }}><span>MANAGE</span></div>
+
+      <section style={{ paddingBottom: 32 }}>
+        <VaultActions
+          tokenMint={mint}
+          vaultCreator={v.creatorWallet || ''}
+          hasPosition={pos.active}
+          currentPrice={p?.currentPrice}
+          entryPrice={p?.entryPrice}
+        />
+      </section>
 
       <hr className="divider" />
 
