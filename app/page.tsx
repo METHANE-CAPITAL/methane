@@ -298,23 +298,50 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-responsive">
           {[
-            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'market: FART-PERP #71', 'oracle: pyth lazer #182'] },
-            { name: 'burn_on_rip', desc: 'Deflationary on profit', specs: ['trigger: +15% unrealized PnL', 'burn: 0.5% total supply', 'source: 30% buyback alloc', 'dest: solana null address', 'freq: per take-profit'] },
-            { name: 'the_blowoff', desc: 'Profit distribution', specs: ['milestones: 2×, 5×, 10× PnL', 'payout: 30% realized gains', 'eligible: top 500 holders', 'snapshot: on milestone block', 'delivery: direct SPL transfer'] },
-            { name: 'critical_mass', desc: 'Governance scaling', specs: ['$100K MC → 3× vote', '$500K MC → 5× vote', '$1M MC → 7× vote', 'governance: SPL Realms', 'execution: 24h quorum'] },
-            { name: 'composting', desc: 'Yield from funding', specs: ['funding: hourly on drift', 'positive → compounds', 'negative → from collateral', 'staker yield: 50% net', 'claim: permissionless'] },
-            { name: 'chain_reaction', desc: 'Liquidation recovery', specs: ['liquidation → 1h cooldown', 're-entry: market order', 'uses: remaining + new fees', 'reset leverage: 3×', 'community vote to escalate'] },
+            { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'market: FART-PERP #71', 'oracle: pyth lazer #182'],
+              detail: 'The core loop that powers everything. Every 15 minutes, the agent checks your creator fee wallet. If there\'s at least 0.05 SOL worth of fees, it claims them, swaps to USDC via Jupiter, deposits into your Drift vault, and opens or increases your FART-PERP long position. Fully autonomous — no manual intervention needed.' },
+            { name: 'burn_on_rip', desc: 'Deflationary on profit', specs: ['trigger: +15% unrealized PnL', 'burn: 0.5% total supply', 'source: 30% buyback alloc', 'dest: solana null address', 'freq: per take-profit'],
+              detail: 'When FART pumps and your vault hits +15% unrealized PnL, the agent takes profit on a portion and uses the 30% buyback allocation to buy $METHANE tokens and send them to the Solana null address — permanently removing them from supply. The more FART pumps, the more $METHANE gets burned.' },
+            { name: 'the_blowoff', desc: 'Profit distribution', specs: ['milestones: 2×, 5×, 10× PnL', 'payout: 30% realized gains', 'eligible: top 500 holders', 'snapshot: on milestone block', 'delivery: direct SPL transfer'],
+              detail: 'At major PnL milestones (2×, 5×, 10×), the agent realizes 30% of gains and distributes them directly to the top 500 $METHANE holders via SPL token transfer. A snapshot is taken at the milestone block to determine eligibility. Bigger bag = bigger share. Rewards for holding through the run.' },
+            { name: 'critical_mass', desc: 'Governance scaling', specs: ['$100K MC → 3× vote', '$500K MC → 5× vote', '$1M MC → 7× vote', 'governance: SPL Realms', 'execution: 24h quorum'],
+              detail: 'As $METHANE grows, governance power scales up. At $100K market cap, each token gets 3× voting weight. At $1M, 7×. This means early holders who believe in the project get outsized governance influence. Proposals go through SPL Realms with a 24-hour quorum period. Community decides leverage levels, fee splits, and new mechanics.' },
+            { name: 'composting', desc: 'Yield from funding', specs: ['funding: hourly on drift', 'positive → compounds', 'negative → from collateral', 'staker yield: 50% net', 'claim: permissionless'],
+              detail: 'Drift perpetuals have hourly funding rates. When funding is positive (shorts pay longs), your vault earns yield that compounds automatically into the position. When funding is negative, it comes from your collateral — this is a real cost of holding a leveraged long. Net positive funding gets split 50/50 between vault growth and claimable yield.' },
+            { name: 'chain_reaction', desc: 'Liquidation recovery', specs: ['liquidation → 1h cooldown', 're-entry: market order', 'uses: remaining + new fees', 'reset leverage: 3×', 'community vote to escalate'],
+              detail: 'If FART drops hard enough to liquidate the position, the agent doesn\'t panic. It waits 1 hour for volatility to settle, then re-enters with whatever collateral remains plus any new fees that came in during cooldown. Re-entry uses 3× leverage (lower than the normal 5×) for safety. Community can vote to increase leverage back up once conditions stabilize.' },
           ].map((m, i) => (
-            <div key={i} className="panel" style={{ padding: '16px 20px' }}>
+            <div key={i} className="panel mechanic-card" style={{ padding: '16px 20px', position: 'relative', cursor: 'default' }}
+              onMouseEnter={e => {
+                const tip = e.currentTarget.querySelector('.mechanic-tooltip') as HTMLElement;
+                if (tip) tip.style.opacity = '1';
+                if (tip) tip.style.pointerEvents = 'auto';
+              }}
+              onMouseLeave={e => {
+                const tip = e.currentTarget.querySelector('.mechanic-tooltip') as HTMLElement;
+                if (tip) tip.style.opacity = '0';
+                if (tip) tip.style.pointerEvents = 'none';
+              }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
                 <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{m.name}</span>
-                <span style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.05em' }}>{m.desc}</span>
+                <span style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.05em' }}>{m.desc} <span style={{ opacity: 0.4 }}>ⓘ</span></span>
               </div>
               {m.specs.map((s, j) => (
                 <div key={j} style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.7 }}>
                   <span style={{ color: 'var(--fg-dark)', marginRight: 6 }}>›</span>{s}
                 </div>
               ))}
+              {/* Tooltip */}
+              <div className="mechanic-tooltip" style={{
+                position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 20,
+                marginTop: 4, padding: '14px 18px',
+                background: '#1a1a1a', border: '1px solid var(--border-med)',
+                fontSize: 11, color: 'var(--fg)', lineHeight: 1.7,
+                opacity: 0, pointerEvents: 'none',
+                transition: 'opacity 0.2s ease',
+              }}>
+                {m.detail}
+              </div>
             </div>
           ))}
         </div>
