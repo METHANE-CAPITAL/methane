@@ -1,68 +1,45 @@
 import FartClouds from '@/components/FartClouds';
 import StinkDivider from '@/components/StinkDivider';
 import GasLog from '@/components/GasLog';
-import PressureGauge from '@/components/PressureGauge';
-import MoleculeViz from '@/components/MoleculeViz';
 import FartChart from '@/components/FartChart';
 import {
   GasCloudIcon, FlameIcon, SkullIcon, GaugeIcon,
   ChartUpIcon, RecycleIcon, BombIcon, LeafIcon,
-  DoubleGasIcon, LiveDot, StinkLines,
+  LiveDot, StinkLines,
 } from '@/components/icons';
-
-const POSITION_STATS = [
-  { label: 'STINK LEVEL', value: '$2,847', meta: 'total position size', color: '#7CFC00', Icon: GaugeIcon },
-  { label: 'ENTRY SNIFF', value: '$0.0234', meta: 'avg across 12 farts', color: '#ADFF2F', Icon: ChartUpIcon },
-  { label: 'CURRENT WHIFF', value: '$0.0251', meta: '+7.26% and rising', color: '#7CFC00', Icon: GasCloudIcon },
-  { label: 'UNREALIZED GAS', value: '+$206.70', meta: 'pure fart profits', color: '#7CFC00', Icon: ChartUpIcon },
-  { label: 'DEATH ZONE', value: '$0.0187', meta: '-20.1% = liquidated', color: '#FF4444', Icon: SkullIcon },
-  { label: 'TOTAL FUEL', value: '4.82 SOL', meta: '~$569 of gas money', color: '#C49B2F', Icon: FlameIcon },
-];
 
 const MECHANICS = [
   {
     Icon: GasCloudIcon,
     title: 'The Digestive Tract',
-    desc: 'You buy $METHANE. Creator fees get claimed, swapped to USDC via Jupiter, and shoved into a 5x leveraged FART long on Drift. The whole digestive system runs every 15 minutes. Automatic. Unstoppable. Gaseous.',
-    detail: 'CLAIM → SWAP → DEPOSIT → LONG · every 15 min',
+    desc: 'You buy $METHANE. Creator fees get claimed, swapped to USDC via Jupiter, and deposited into a 5x leveraged FART long on Drift. 70% goes to the long, 30% buys back $METHANE.',
+    detail: 'CLAIM → SWAP → DEPOSIT → LONG',
   },
   {
     Icon: FlameIcon,
     title: 'Burn on Rip',
-    desc: 'When the FART long takes profit, $METHANE supply gets burned. You literally burn it off. The louder the rip, the more supply vanishes. Silent but deflationary.',
-    detail: '0.5% supply burned per profit-take event',
+    desc: 'When the FART long profits, $METHANE supply gets burned. The louder the rip, the more supply vanishes.',
+    detail: '0.5% supply burned per take-profit',
   },
   {
     Icon: SkullIcon,
     title: 'The Blowoff',
-    desc: 'At 2x, 5x, and 10x profit milestones, a portion of realized gains gets distributed to $METHANE holders. Hold your nose and hold your tokens.',
-    detail: '30% of gains → top 500 holders · snapshot at milestone',
-  },
-  {
-    Icon: DoubleGasIcon,
-    title: 'Double Gas',
-    desc: '70% of fees go to the FART long, 30% buys back $METHANE on the open market. Two streams of gas. Double the pressure. Double the stink.',
-    detail: '70/30 split · FART long + METHANE buyback',
+    desc: 'At 2x, 5x, and 10x profit milestones, realized gains get distributed to $METHANE holders. Stakers earn Drift funding rate payments.',
+    detail: '30% of gains → top 500 holders',
   },
   {
     Icon: BombIcon,
     title: 'Critical Mass',
-    desc: 'As $METHANE MC hits milestones, the community votes to crank the leverage. 3x → 5x → 7x. More degen. More dangerous. More hilarious when it prints.',
-    detail: '$100K=3x · $500K=5x · $1M=7x · token-weighted vote',
-  },
-  {
-    Icon: LeafIcon,
-    title: 'Composting',
-    desc: 'Stake your $METHANE to earn a share of Drift funding rate payments. Let your tokens decompose into passive yield. Nature\'s way of recycling farts.',
-    detail: 'variable yield · no lock · claim every epoch',
+    desc: 'As $METHANE MC hits milestones, the community votes to crank the leverage. More degen. More dangerous.',
+    detail: '$100K=3x · $500K=5x · $1M=7x',
   },
 ];
 
 const PIPELINE_STEPS = [
-  { step: '01', Icon: GasCloudIcon, title: 'YOU BUY $METHANE', sub: 'on pump.fun', desc: 'Innocent enough. You buy the token. Little do you know what happens next.' },
-  { step: '02', Icon: RecycleIcon, title: 'FEES DIGESTED', sub: '1% creator fee', desc: 'The creator fee gets gobbled up by the smart contract. Nom nom nom.' },
-  { step: '03', Icon: RecycleIcon, title: 'SWAPPED TO USDC', sub: 'via Jupiter', desc: 'SOL gets converted to USDC. The body processes the nutrients.' },
-  { step: '04', Icon: ChartUpIcon, title: '5x FART LONG', sub: 'on Drift Protocol', desc: 'And out the other end comes a leveraged Fartcoin position. Beautiful.' },
+  { n: '01', title: 'BUY $METHANE', sub: 'on pump.fun' },
+  { n: '02', title: 'FEES CLAIMED', sub: '1% creator fee' },
+  { n: '03', title: 'SWAP TO USDC', sub: 'via Jupiter' },
+  { n: '04', title: '5x FART LONG', sub: 'on Drift Protocol' },
 ];
 
 export default function Home() {
@@ -70,255 +47,153 @@ export default function Home() {
     <div className="relative min-h-screen bg-bg">
       <FartClouds />
 
-      {/* TOP BAR */}
-      <div className="relative z-10 border-b border-stink/10 bg-bg/90 backdrop-blur-sm">
-        <div className="max-w-[1200px] mx-auto px-6 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <GasCloudIcon size={20} className="text-stink" />
-            <span className="font-bungee text-stink text-sm tracking-wider">$METHANE</span>
+      {/* NAV */}
+      <nav className="relative z-10 border-b border-stink/8 bg-bg/90 backdrop-blur-sm">
+        <div className="max-w-[1100px] mx-auto px-6 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <GasCloudIcon size={16} className="text-stink/60" />
+            <span className="font-bungee text-xs text-stink tracking-wider">$METHANE</span>
           </div>
-          <div className="flex items-center gap-5 text-[11px] font-mono">
-            <a href="https://pump.fun" target="_blank" rel="noopener" className="text-stink/40 hover:text-stink transition-colors">PUMP.FUN</a>
-            <a href="https://dexscreener.com" target="_blank" rel="noopener" className="text-stink/40 hover:text-stink transition-colors">DEXSCREENER</a>
-            <a href="https://app.drift.trade" target="_blank" rel="noopener" className="text-stink/40 hover:text-stink transition-colors">DRIFT POSITION</a>
-            <a href="#" className="text-stink/40 hover:text-stink transition-colors">TWITTER</a>
+          <div className="flex items-center gap-5 text-[10px] font-mono">
+            {['PUMP.FUN', 'DEXSCREENER', 'DRIFT', 'TWITTER'].map(l => (
+              <a key={l} href="#" className="text-stink/25 hover:text-stink/60 transition-colors">{l}</a>
+            ))}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* HERO */}
-      <section className="relative z-10 py-20 md:py-32 overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center space-y-8">
-            <div className="flex justify-center">
-              <GasCloudIcon size={80} className="text-stink/60 animate-wobble" />
-            </div>
+      <section className="relative z-10 pt-20 pb-14 md:pt-28 md:pb-20">
+        <div className="max-w-[1100px] mx-auto px-6 text-center">
+          <GasCloudIcon size={56} className="text-stink/40 mx-auto mb-6 animate-wobble" />
 
-            <div>
-              <h1 className="font-bungee text-6xl md:text-8xl lg:text-9xl text-stink stink-glow leading-none">
-                $METHANE
-              </h1>
-              <p className="mt-4 text-xl md:text-2xl font-display font-bold text-gas/80">
-                Every buy rips a bigger FART long
-              </p>
-              <p className="mt-3 text-base text-fart-tan/60 max-w-lg mx-auto">
-                Creator fees are automatically claimed, swapped, and dumped into a{' '}
-                <span className="text-stink font-bold">5x leveraged Fartcoin long</span>{' '}
-                on Drift Protocol. The position is public. The PnL is real. It smells like money.
-              </p>
-            </div>
+          <h1 className="font-bungee text-5xl md:text-7xl lg:text-8xl text-stink stink-glow leading-none">
+            $METHANE
+          </h1>
+          <p className="mt-3 text-lg md:text-xl font-display font-bold text-gas/70">
+            Every buy rips a bigger FART long
+          </p>
+          <p className="mt-3 text-sm text-stink/35 max-w-md mx-auto leading-relaxed">
+            Creator fees automatically fund a{' '}
+            <span className="text-stink font-semibold">5x leveraged Fartcoin long</span>{' '}
+            on Drift Protocol. Public position. Real PnL.
+          </p>
 
-            {/* CA */}
-            <div className="inline-block gas-border px-6 py-3 mx-auto">
-              <div className="text-[10px] font-mono text-stink/40 mb-1">CONTRACT ADDRESS</div>
-              <code className="text-base font-mono text-stink font-bold">
-                TBD — LAUNCHING SOON
-              </code>
-            </div>
+          {/* CA */}
+          <div className="inline-block gas-border px-5 py-2.5 mt-6">
+            <div className="text-[9px] font-mono text-stink/25 mb-0.5">CA</div>
+            <code className="text-sm font-mono text-stink font-bold">TBD — LAUNCHING SOON</code>
+          </div>
 
-            {/* Quick stats row */}
-            <div className="flex flex-wrap justify-center gap-8 pt-4">
-              {[
-                { label: 'BLAST RADIUS', value: '5x', color: '#C49B2F', Icon: BombIcon },
-                { label: 'TARGET', value: 'FART-PERP', color: '#ADFF2F', Icon: ChartUpIcon },
-                { label: 'PROTOCOL', value: 'DRIFT', color: '#7CFC00', Icon: GaugeIcon },
-                { label: 'STATUS', value: 'RIPPING', color: '#7CFC00', Icon: null },
-              ].map((s, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-[10px] font-mono text-stink/30 mb-1 flex items-center justify-center gap-1">
-                    {s.Icon && <s.Icon size={12} className="text-stink/30" />}
-                    {s.label}
-                  </div>
-                  <div className="text-lg font-bungee flex items-center justify-center gap-2" style={{ color: s.color }}>
-                    {s.label === 'STATUS' && <LiveDot />}
-                    {s.value}
-                  </div>
+          {/* Quick stats */}
+          <div className="flex justify-center gap-10 mt-8">
+            {[
+              { label: 'LEVERAGE', value: '5x' },
+              { label: 'TARGET', value: 'FART-PERP' },
+              { label: 'PROTOCOL', value: 'DRIFT' },
+              { label: 'STATUS', value: 'LIVE', live: true },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-[9px] font-mono text-stink/20 mb-1">{s.label}</div>
+                <div className="text-sm font-bungee text-gas flex items-center justify-center gap-1.5">
+                  {s.live && <LiveDot className="scale-75" />}
+                  {s.value}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <StinkDivider label="FARTCOIN CHART" />
+      <StinkDivider />
 
-      {/* FARTCOIN CHART */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
+      {/* CHART */}
+      <section className="relative z-10 py-10">
+        <div className="max-w-[1100px] mx-auto px-6">
           <FartChart />
         </div>
       </section>
 
-      <StinkDivider label="THE POSITION" />
+      <StinkDivider />
 
-      {/* FART-O-METER */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="gas-border">
-            <div className="px-6 py-3 border-b border-stink/10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <LiveDot />
-                <span className="font-bungee text-sm text-stink/70">FART-O-METER</span>
-                <span className="text-[10px] font-mono text-stink/30">LIVE POSITION DATA</span>
-              </div>
-              <span className="text-[10px] font-mono text-stink/20">
-                DRIFT · FART-PERP · MKT #71
-              </span>
-            </div>
+      {/* PIPELINE — horizontal flow */}
+      <section className="relative z-10 py-14">
+        <div className="max-w-[1100px] mx-auto px-6">
+          <h2 className="font-bungee text-2xl md:text-3xl text-stink mb-8">How It Works</h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              {POSITION_STATS.map((stat, i) => (
-                <div key={i} className="px-4 py-5 border-b md:border-b-0 border-r border-stink/5 last:border-r-0 hover:bg-stink/[0.02] transition-colors">
-                  <div className="text-[10px] font-mono text-stink/30 mb-2 flex items-center gap-1.5">
-                    <stat.Icon size={12} className="text-stink/30" />
-                    {stat.label}
-                  </div>
-                  <div className="text-xl font-mono font-bold" style={{ color: stat.color }}>{stat.value}</div>
-                  <div className="text-[10px] font-mono text-stink/20 mt-1">{stat.meta}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PRESSURE + MOLECULE */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="gas-border p-8 flex flex-col items-center justify-center">
-              <PressureGauge pressure={34} label="GAS PRESSURE" value="34%" sublabel="Level 2 approaching · Next blowoff at 50%" />
-            </div>
-            <div className="gas-border p-8 flex flex-col items-center justify-center fart-cloud">
-              <MoleculeViz />
-              <p className="text-center text-sm text-stink/30 font-mono mt-4">
-                CH4 — one carbon, four hydrogens, infinite leverage
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <StinkDivider label="HOW IT RIPS" />
-
-      {/* THE DIGESTIVE TRACT */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <h2 className="font-bungee text-3xl md:text-4xl text-stink stink-glow mb-3">
-            The Digestive Tract
-          </h2>
-          <p className="text-base text-stink/40 mb-8 max-w-2xl">
-            From purchase to position. Every $METHANE buy goes through the system.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
             {PIPELINE_STEPS.map((s, i) => (
-              <div key={i} className="relative">
-                <div className="gas-border p-5 h-full hover:bg-stink/[0.02] transition-colors">
-                  <div className="text-[10px] font-mono text-stink/20 mb-3">STEP_{s.step}</div>
-                  <div className="mb-3">
-                    <s.Icon size={32} className="text-stink/60" />
-                  </div>
-                  <div className="font-bungee text-sm text-stink mb-1">{s.title}</div>
-                  <div className="text-[11px] font-mono text-fart-tan/50 mb-3">{s.sub}</div>
-                  <p className="text-[13px] text-stink/40 leading-relaxed">{s.desc}</p>
-                </div>
+              <div key={i} className="relative gas-border p-5 text-center">
+                <div className="text-[9px] font-mono text-stink/15 mb-2">STEP {s.n}</div>
+                <div className="font-bungee text-sm text-stink mb-1">{s.title}</div>
+                <div className="text-[11px] font-mono text-stink/30">{s.sub}</div>
                 {i < 3 && (
-                  <div className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
-                    <StinkLines size={24} className="text-stink/40" />
+                  <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 text-stink/20">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
                 )}
               </div>
             ))}
           </div>
 
-          <div className="mt-4 gas-border px-5 py-3 flex items-center gap-2">
-            <GasCloudIcon size={14} className="text-stink/30" />
-            <span className="text-[11px] font-mono text-stink/30">
-              EVERY TRANSACTION ON-CHAIN · VERIFY ON SOLSCAN · DRIFT POSITION IS PUBLIC · WE LITERALLY CANNOT RUG THE FART
-            </span>
+          <div className="mt-3 text-[10px] font-mono text-stink/15 text-center">
+            EVERY STEP ON-CHAIN · VERIFY ON SOLSCAN · POSITION IS PUBLIC
           </div>
         </div>
       </section>
 
-      <StinkDivider label="WHY FART?" />
+      <StinkDivider />
 
-      {/* FARTCOIN TRIBUTE */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="gas-border p-8 md:p-12 fart-cloud">
-            <div className="text-center space-y-6">
-              <GasCloudIcon size={64} className="text-gas/50 mx-auto" />
-              <h2 className="font-bungee text-3xl md:text-5xl text-gas stink-glow">
-                In Honor of FART
-              </h2>
-              <p className="text-lg text-stink/50 max-w-2xl mx-auto leading-relaxed">
-                Let&apos;s be real — <span className="text-stink font-bold">Fartcoin</span> is one of the most iconic tokens on Solana.
-                It&apos;s literally called Fartcoin. And it rips.
-              </p>
-              <p className="text-base text-stink/40 max-w-2xl mx-auto leading-relaxed">
-                $METHANE doesn&apos;t compete with FART — we <span className="text-stink font-bold">worship</span> it.
-                Every dollar of creator fees goes into longing Fartcoin with maximum leverage.
-                We are the degenerate fan club that put their money where their gas is.
-              </p>
-              <p className="text-base text-fart-tan/60 max-w-xl mx-auto italic">
-                &quot;Others talk about farts. We leverage them.&quot;
-              </p>
+      {/* IN HONOR OF FART */}
+      <section className="relative z-10 py-14">
+        <div className="max-w-[1100px] mx-auto px-6">
+          <div className="gas-border p-8 md:p-12 text-center fart-cloud">
+            <h2 className="font-bungee text-2xl md:text-4xl text-gas stink-glow mb-4">
+              In Honor of FART
+            </h2>
+            <p className="text-sm text-stink/40 max-w-lg mx-auto leading-relaxed mb-2">
+              <span className="text-stink font-semibold">Fartcoin</span> is one of the most iconic tokens on Solana.
+              $METHANE doesn&apos;t compete — we <span className="text-stink font-semibold">worship</span> it.
+              Every dollar of creator fees goes into longing FART with max leverage.
+            </p>
+            <p className="text-sm text-fart-tan/50 italic mb-6">
+              &quot;Others talk about farts. We leverage them.&quot;
+            </p>
 
-              <div className="flex flex-wrap justify-center gap-4 pt-4">
-                <a href="https://dexscreener.com/solana/9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump" target="_blank" rel="noopener"
-                  className="gas-border px-5 py-2.5 font-mono text-sm text-stink hover:bg-stink/10 transition-colors flex items-center gap-2">
-                  <ChartUpIcon size={14} className="text-stink" />
-                  FART on DexScreener
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { label: 'DexScreener', href: 'https://dexscreener.com/solana/9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump' },
+                { label: 'CoinGecko', href: 'https://www.coingecko.com/en/coins/fartcoin' },
+                { label: 'FART-PERP on Drift', href: 'https://app.drift.trade/perpetuals/FART-PERP' },
+              ].map((l, i) => (
+                <a key={i} href={l.href} target="_blank" rel="noopener"
+                  className="gas-border px-4 py-2 font-mono text-[11px] text-stink/60 hover:text-stink hover:bg-stink/5 transition-colors">
+                  {l.label}
                 </a>
-                <a href="https://www.coingecko.com/en/coins/fartcoin" target="_blank" rel="noopener"
-                  className="gas-border px-5 py-2.5 font-mono text-sm text-stink hover:bg-stink/10 transition-colors flex items-center gap-2">
-                  <GaugeIcon size={14} className="text-stink" />
-                  FART on CoinGecko
-                </a>
-                <a href="https://app.drift.trade/perpetuals/FART-PERP" target="_blank" rel="noopener"
-                  className="gas-border px-5 py-2.5 font-mono text-sm text-stink hover:bg-stink/10 transition-colors flex items-center gap-2">
-                  <ChartUpIcon size={14} className="text-stink" />
-                  FART-PERP on Drift
-                </a>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <StinkDivider label="THE MECHANICS" />
+      <StinkDivider />
 
       {/* MECHANICS */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <h2 className="font-bungee text-3xl md:text-4xl text-stink stink-glow mb-3">
-            Six Ways to Rip
-          </h2>
-          <p className="text-base text-stink/40 mb-8 max-w-2xl">
-            Autonomous on-chain mechanics. No human intervention. Just gas.
-          </p>
+      <section className="relative z-10 py-14">
+        <div className="max-w-[1100px] mx-auto px-6">
+          <h2 className="font-bungee text-2xl md:text-3xl text-stink mb-8">The Mechanics</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {MECHANICS.map((m, i) => (
-              <div key={i} className="gas-border hover:border-stink/30 transition-all group">
-                <div className="px-5 py-3 border-b border-stink/5 flex items-center justify-between">
+              <div key={i} className="gas-border hover:border-stink/25 transition-all">
+                <div className="p-5 space-y-3">
                   <div className="flex items-center gap-3">
                     <m.Icon size={18} className="text-stink/50" />
-                    <span className="text-[10px] font-mono text-stink/30 uppercase tracking-wider">
-                      MECHANIC_{String(i + 1).padStart(2, '0')}
-                    </span>
+                    <h3 className="font-bungee text-sm text-stink">{m.title}</h3>
                   </div>
-                  <span className="text-[10px] font-mono text-stink/20 group-hover:text-stink/50 transition-colors flex items-center gap-1">
-                    <LiveDot className="scale-75" />
-                    ACTIVE
-                  </span>
-                </div>
-                <div className="p-5 space-y-3">
-                  <h3 className="font-bungee text-base text-stink">{m.title}</h3>
-                  <p className="text-[14px] leading-relaxed text-stink/50">{m.desc}</p>
+                  <p className="text-[13px] leading-relaxed text-stink/40">{m.desc}</p>
                   <div className="pt-2 border-t border-stink/5">
-                    <p className="text-[11px] font-mono text-stink/20">{m.detail}</p>
+                    <p className="text-[10px] font-mono text-stink/15">{m.detail}</p>
                   </div>
                 </div>
               </div>
@@ -327,88 +202,30 @@ export default function Home() {
         </div>
       </section>
 
-      <StinkDivider label="GAS LOG" />
+      <StinkDivider />
 
       {/* GAS LOG */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
+      <section className="relative z-10 py-14">
+        <div className="max-w-[1100px] mx-auto px-6">
           <GasLog />
         </div>
       </section>
 
-      <StinkDivider label="EMISSIONS REPORT" />
-
-      {/* EMISSIONS REPORT */}
-      <section className="relative z-10 py-12">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="gas-border p-8">
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h3 className="font-bungee text-xl text-stink flex items-center gap-2">
-                  <GasCloudIcon size={20} className="text-stink/50" />
-                  Weekly Emissions Report #003
-                </h3>
-                <p className="text-[11px] font-mono text-stink/20 mt-1">
-                  REPORTING PERIOD: APR 2 — APR 9, 2026 · PUBLISHED ON-CHAIN · PEER-REVIEWED (by degens)
-                </p>
-              </div>
-              <span className="text-[10px] font-mono text-stink border border-stink/20 px-2 py-1 flex items-center gap-1">
-                <LiveDot className="scale-75" />
-                VERIFIED
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[
-                { label: 'TOTAL GAS COLLECTED', value: '4.82 SOL', sub: '~$569 of premium gas', color: '#7CFC00', Icon: GasCloudIcon },
-                { label: 'FART PERFORMANCE', value: '+7.26%', sub: 'unrealized stink gains', color: '#ADFF2F', Icon: ChartUpIcon },
-                { label: 'SUPPLY BURNED', value: '48,200', sub: '0.48% — burnt offering', color: '#FF4444', Icon: FlameIcon },
-                { label: 'BUYBACK EXECUTED', value: '1.44 SOL', sub: '30% recycled gas', color: '#C49B2F', Icon: RecycleIcon },
-              ].map((s, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="text-[10px] font-mono text-stink/20 flex items-center gap-1">
-                    <s.Icon size={10} className="text-stink/20" />
-                    {s.label}
-                  </div>
-                  <div className="text-2xl font-mono font-bold" style={{ color: s.color }}>{s.value}</div>
-                  <div className="text-[10px] font-mono text-stink/20">{s.sub}</div>
-                </div>
-              ))}
-            </div>
+      {/* FOOTER */}
+      <footer className="relative z-10 border-t border-stink/8 mt-8">
+        <div className="max-w-[1100px] mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <GasCloudIcon size={14} className="text-stink/30" />
+            <span className="font-bungee text-[10px] text-stink/40">$METHANE</span>
+            <span className="text-[9px] font-mono text-stink/15">· EVERY BUY RIPS A BIGGER FART LONG</span>
+          </div>
+          <div className="flex items-center gap-4 text-[9px] font-mono">
+            {['PUMP.FUN', 'DEXSCREENER', 'DRIFT', 'TWITTER', 'SOLSCAN'].map(l => (
+              <a key={l} href="#" className="text-stink/15 hover:text-stink/40 transition-colors">{l}</a>
+            ))}
           </div>
         </div>
-      </section>
-
-      {/* FOOTER */}
-      <div className="relative z-10 mt-12">
-        <div className="h-px bg-stink/10" />
-        <footer className="bg-bg/95 backdrop-blur-sm">
-          <div className="max-w-[1200px] mx-auto px-6 py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <GasCloudIcon size={18} className="text-stink/40" />
-                <span className="font-bungee text-sm text-stink/50">$METHANE</span>
-                <span className="text-[10px] font-mono text-stink/20">
-                  CH4 · EVERY BUY RIPS A BIGGER FART LONG
-                </span>
-              </div>
-              <div className="flex items-center gap-4 text-[10px] font-mono">
-                {[
-                  { label: 'PUMP.FUN', href: 'https://pump.fun' },
-                  { label: 'DEXSCREENER', href: 'https://dexscreener.com' },
-                  { label: 'DRIFT', href: 'https://app.drift.trade' },
-                  { label: 'TWITTER', href: '#' },
-                  { label: 'SOLSCAN', href: 'https://solscan.io' },
-                ].map((l, i) => (
-                  <a key={i} href={l.href} target="_blank" rel="noopener" className="text-stink/25 hover:text-stink transition-colors">
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
-      </div>
+      </footer>
     </div>
   );
 }
