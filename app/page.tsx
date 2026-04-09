@@ -21,15 +21,7 @@ function useScrollReveal() {
   }, []);
 }
 
-const PIPELINE_ASCII = `   ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-   │          │     │          │     │          │     │          │     │          │
-   │ COLLECT  │────▶│   SWAP   │────▶│  SPLIT   │────▶│ DEPOSIT  │────▶│   LONG   │
-   │          │     │          │     │          │     │          │     │          │
-   │ claim    │     │ jupiter  │     │  70/30   │     │  drift   │     │ FART-    │
-   │ creator  │     │ SOL →    │     │ long  /  │     │ deposit  │     │ PERP     │
-   │ fees     │     │ USDC     │     │ burn     │     │ USDC     │     │ 5x       │
-   │          │     │          │     │          │     │          │     │          │
-   └──────────┘     └──────────┘     └──────────┘     └──────────┘     └──────────┘`;
+// Pipeline rendered as styled divs instead of ASCII box-drawing (font-safe)
 
 export default function Home() {
   useScrollReveal();
@@ -53,7 +45,7 @@ export default function Home() {
       </nav>
 
       {/* ═══ HERO ═══ */}
-      <section style={{ padding: '80px 0 48px' }} className="text-center">
+      <section style={{ padding: '60px 0 40px' }} className="text-center">
         <div className="reveal" style={{ marginBottom: 24 }}>
           <MethaneAscii className="text-[12px] sm:text-[15px] md:text-[18px]" style={{ color: 'var(--white)' }} />
         </div>
@@ -76,9 +68,9 @@ export default function Home() {
       {/* ═══ § 01 — WHY FART ═══ */}
       <div className="section-label"><span>§ 01 · WHY FART</span></div>
 
-      <section className="reveal" style={{ paddingBottom: 48 }}>
-        <div className="hide-mobile" style={{ marginBottom: 24 }}>
-          <FartPerpsAscii className="text-[8px] sm:text-[9px] md:text-[10px]" style={{ color: 'var(--fg-dark)' }} />
+      <section className="reveal" style={{ paddingBottom: 40 }}>
+        <div className="hide-mobile" style={{ marginBottom: 20 }}>
+          <FartPerpsAscii className="text-[8px] sm:text-[9px] md:text-[11px]" style={{ color: 'var(--fg-dark)' }} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="grid-responsive">
@@ -125,14 +117,30 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 02 — HOW IT WORKS ═══ */}
-      <div className="section-label" style={{ marginTop: 48 }}><span>§ 02 · PIPELINE</span></div>
+      <div className="section-label" style={{ marginTop: 40 }}><span>§ 02 · PIPELINE</span></div>
 
-      <section className="reveal" style={{ paddingBottom: 48 }}>
+      <section className="reveal" style={{ paddingBottom: 40 }}>
         <h2 style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>How It Works</h2>
-        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 24 }}>Five steps. Every 15 minutes. Fully autonomous.</p>
+        <p style={{ fontSize: 12, color: 'var(--fg-dark)', marginBottom: 20 }}>Five steps. Every 15 minutes. Fully autonomous.</p>
 
-        <div className="panel" style={{ padding: '24px 28px', overflow: 'auto' }}>
-          <pre style={{ fontSize: 10, color: 'var(--fg-dim)', lineHeight: 1.4, whiteSpace: 'pre' }}>{PIPELINE_ASCII}</pre>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }} className="grid-responsive">
+          {[
+            { title: 'COLLECT', lines: ['claim', 'creator', 'fees'] },
+            { title: 'SWAP', lines: ['jupiter', 'SOL →', 'USDC'] },
+            { title: 'SPLIT', lines: ['70/30', 'long /', 'burn'] },
+            { title: 'DEPOSIT', lines: ['drift', 'deposit', 'USDC'] },
+            { title: 'LONG', lines: ['FART-', 'PERP', '5×'] },
+          ].map((step, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="panel" style={{ padding: '16px 14px', flex: 1, textAlign: 'center' }}>
+                <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 6 }}>{step.title}</div>
+                {step.lines.map((l, j) => (
+                  <div key={j} style={{ fontSize: 10, color: 'var(--fg-dark)', lineHeight: 1.5 }}>{l}</div>
+                ))}
+              </div>
+              {i < 4 && <span style={{ color: 'var(--fg-dark)', fontSize: 12, padding: '0 4px', flexShrink: 0 }}>→</span>}
+            </div>
+          ))}
         </div>
 
         <p style={{ fontSize: 9, color: 'var(--fg-dark)', textAlign: 'center', marginTop: 12, letterSpacing: '0.1em' }}>
@@ -143,7 +151,7 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 03 — CHART ═══ */}
-      <div className="section-label" style={{ marginTop: 48 }}><span>§ 03 · MARKET DATA</span></div>
+      <div className="section-label" style={{ marginTop: 40 }}><span>§ 03 · MARKET DATA</span></div>
 
       <section className="reveal" style={{ paddingBottom: 16 }}>
         <h2 style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>FART / USD</h2>
@@ -157,10 +165,10 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 04 — MECHANICS ═══ */}
-      <div className="section-label" style={{ marginTop: 48 }}><span>§ 04 · MECHANICS</span></div>
+      <div className="section-label" style={{ marginTop: 40 }}><span>§ 04 · MECHANICS</span></div>
 
-      <section className="reveal" style={{ paddingBottom: 48 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} className="grid-responsive">
+      <section className="reveal" style={{ paddingBottom: 40 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-responsive">
           {[
             { name: 'digestive_tract', desc: 'Core pipeline loop', specs: ['cycle: every 15 min', 'min claim: 0.05 SOL', 'route: jupiter v6', 'market: FART-PERP #71', 'oracle: pyth lazer #182'] },
             { name: 'burn_on_rip', desc: 'Deflationary on profit', specs: ['trigger: +15% unrealized PnL', 'burn: 0.5% total supply', 'source: 30% buyback alloc', 'dest: solana null address', 'freq: per take-profit'] },
@@ -187,7 +195,7 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 05 — GPAAS ═══ */}
-      <div className="section-label" style={{ marginTop: 48 }}><span>§ 05 · FOR YOUR TOKEN</span></div>
+      <div className="section-label" style={{ marginTop: 40 }}><span>§ 05 · FOR YOUR TOKEN</span></div>
 
       <section className="reveal" style={{ paddingBottom: 48 }}>
         <h2 style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Gas Pipeline as a Service</h2>
@@ -229,9 +237,9 @@ export default function Home() {
       <hr className="divider" />
 
       {/* ═══ § 06 — GAS LOG ═══ */}
-      <div className="section-label" style={{ marginTop: 48 }}><span>§ 06 · GAS LOG</span></div>
+      <div className="section-label" style={{ marginTop: 40 }}><span>§ 06 · GAS LOG</span></div>
 
-      <section className="reveal" style={{ paddingBottom: 48 }}>
+      <section className="reveal" style={{ paddingBottom: 40 }}>
         <GasLog />
       </section>
 
