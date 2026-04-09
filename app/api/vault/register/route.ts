@@ -1,19 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createHash } from 'crypto';
 
 export const runtime = 'edge';
 
 const REDIS_URL = process.env.UPSTASH_REDIS_URL || '';
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_TOKEN || '';
-const VAULT_MASTER_SEED = process.env.VAULT_MASTER_SEED || '';
 
-async function redisCmd(method: string, body: any[]) {
+async function redisPost(body: any[]) {
   const res = await fetch(`${REDIS_URL}`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${REDIS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   return res.json();
@@ -27,48 +22,96 @@ async function redisGet(cmd: string, ...args: string[]) {
 }
 
 /**
- * Derive vault public address deterministically.
- * This ONLY derives the public key — no secret key leaves the server.
- * The actual keypair is only materialized in the agent process.
- *
- * For the site, we use the same derivation to show the deposit address.
+ * Verify an Ed25519 signature on edge runtime using SubtleCrypto.
+ * Solana wallets sign with Ed25519 — we verify the signature matches the claimed wallet.
  */
-function deriveVaultAddress(masterSeed: string, tokenMint: string): string {
-  // We need Ed25519 key derivation. Since edge runtime doesn't have Node crypto,
-  // we use SubtleCrypto to hash, then derive a deterministic "address" that
-  // matches what the agent derives.
-  //
-  // IMPORTANT: The actual keypair derivation happens in the agent (Node.js).
-  // Here we just compute the same hash to get the public key.
-  // This is a simplified version — in production the agent pre-registers
-  // the vault address in Redis, and the site just reads it.
-  //
-  // For now: we call the agent's registration endpoint or pre-derive.
-  // Since we can't do Ed25519 from seed in edge runtime, the flow is:
-  // 1. Site sends registration request
-  // 2. Agent (or a serverless function with Node runtime) derives the keypair
-  // 3. Stores vault info (with public address) in Redis
-  // 4. Site reads from Redis
-  //
-  // This route triggers the registration. The vault address comes from Redis
-  // after the agent processes it.
-  return ''; // placeholder — actual address comes from agent
+async function verifySignature(message: string, signatureB64: string, publicKeyB58: string): Promise<boolean> {
+  try {
+    // Decode base58 public key
+    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    function decodeB58(str: string): Uint8Array {
+      const bytes: number[] = [];
+      for (const c of str) {
+        let carry = ALPHABET.indexOf(c);
+        if (carry < 0) throw new Error('Invalid base58');
+        for (let i = 0; i < bytes.length; i++) {
+          carry += bytes[i] * 58;
+          bytes[i] = carry & 0xff;
+          carry >>= 8;
+        }
+        while (carry > 0) {
+          bytes.push(carry & 0xff);
+          carry >>= 8;
+        }
+      }
+      for (const c of str) {
+        if (c !== '1') break;
+        bytes.push(0);
+      }
+      return new Uint8Array(bytes.reverse());
+    }
+
+    const pubKeyBytes = decodeB58(publicKeyB58);
+    const sigBytes = Uint8Array.from(atob(signatureB64), c => c.charCodeAt(0));
+    const msgBytes = new TextEncoder().encode(message);
+
+    // Import Ed25519 public key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new Uint8Array(pubKeyBytes) as unknown as BufferSource,
+      { name: 'Ed25519' },
+      false,
+      ['verify']
+    );
+
+    return await crypto.subtle.verify(
+      'Ed25519',
+      key,
+      new Uint8Array(sigBytes) as unknown as BufferSource,
+      new Uint8Array(msgBytes) as unknown as BufferSource
+    );
+  } catch (err) {
+    console.error('Signature verification error:', err);
+    return false;
+  }
 }
 
 /**
  * POST /api/vault/register
- * Register a new vault for a token.
  *
- * Body: { tokenMint, tokenName, tokenSymbol, creatorWallet, signature }
- * signature = signed message proving creator wallet ownership
+ * Body: {
+ *   tokenMint: string,
+ *   tokenName: string,
+ *   tokenSymbol: string,
+ *   creatorWallet: string,
+ *   leverage?: number,
+ *   signature: string (base64),
+ *   message: string (the signed message)
+ * }
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { tokenMint, tokenName, tokenSymbol, creatorWallet, leverage } = body;
+    const { tokenMint, tokenName, tokenSymbol, creatorWallet, leverage, signature, message } = body;
 
     if (!tokenMint || !creatorWallet) {
       return NextResponse.json({ error: 'Missing tokenMint or creatorWallet' }, { status: 400 });
+    }
+
+    // Verify wallet signature
+    if (!signature || !message) {
+      return NextResponse.json({ error: 'Wallet signature required. Connect your wallet and sign the verification message.' }, { status: 401 });
+    }
+
+    // Verify the signed message contains the expected content
+    const expectedPrefix = `methane:register:${tokenMint}:`;
+    if (!message.startsWith(expectedPrefix)) {
+      return NextResponse.json({ error: 'Invalid signed message format' }, { status: 400 });
+    }
+
+    const verified = await verifySignature(message, signature, creatorWallet);
+    if (!verified) {
+      return NextResponse.json({ error: 'Invalid signature — could not verify wallet ownership' }, { status: 401 });
     }
 
     // Check if already registered
@@ -89,22 +132,21 @@ export async function POST(request: Request) {
       });
     }
 
-    // Queue registration — store as pending, agent picks it up and derives keypair
+    // Queue registration for agent to process
     const pending = {
       tokenMint,
       tokenName: tokenName || 'Unknown',
       tokenSymbol: tokenSymbol || 'TKN',
       creatorWallet,
-      leverage: leverage || 5,
+      leverage: Math.min(Math.max(Number(leverage) || 5, 1.1), 7.5), // clamp to Lavarage limits
       requestedAt: Date.now(),
       status: 'pending',
     };
 
-    // Store in pending queue
-    await redisCmd('POST', ['HSET', 'methane:vault-pending', tokenMint, JSON.stringify(pending)]);
+    await redisPost(['HSET', 'methane:vault-pending', tokenMint, JSON.stringify(pending)]);
 
     return NextResponse.json({
-      message: 'Registration queued. Your vault will be ready within 15 minutes (next agent cycle).',
+      message: 'Registration queued. Your vault will be ready within 15 minutes.',
       pending: true,
       tokenMint,
     });
