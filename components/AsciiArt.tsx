@@ -1,4 +1,6 @@
-export function MethaneAscii({ className = '' }: { className?: string }) {
+import React from 'react';
+
+export function MethaneAscii({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
   const art = [
     '    __  ___     __  __                   ',
     '   /  |/  /__  / /_/ /_  ____ _____  ___ ',
@@ -8,11 +10,11 @@ export function MethaneAscii({ className = '' }: { className?: string }) {
   ].join('\n');
 
   return (
-    <pre className={`font-mono leading-tight select-none whitespace-pre ${className}`}>{art}</pre>
+    <pre className={`font-mono leading-tight select-none whitespace-pre ${className}`} style={style}>{art}</pre>
   );
 }
 
-export function FartPerpsAscii({ className = '' }: { className?: string }) {
+export function FartPerpsAscii({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
   const art = [
     '    ______           __             _          ____                      ',
     '   / ____/___ ______/ /__________  (_)___     / __ \\___  _________  _____',
@@ -23,6 +25,6 @@ export function FartPerpsAscii({ className = '' }: { className?: string }) {
   ].join('\n');
 
   return (
-    <pre className={`font-mono leading-tight select-none whitespace-pre ${className}`}>{art}</pre>
+    <pre className={`font-mono leading-tight select-none whitespace-pre ${className}`} style={style}>{art}</pre>
   );
 }

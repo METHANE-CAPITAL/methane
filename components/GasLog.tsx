@@ -36,31 +36,39 @@ export default function GasLog() {
 
   const displayLogs = logs.length > 0 ? logs.slice(0, 10) : placeholders;
 
+  const typeColors: Record<string, string> = {
+    CLAIM: 'var(--green)',
+    SWAP: 'var(--green)',
+    LONG: 'var(--white)',
+    BURN: 'var(--red)',
+    SYSTEM: 'var(--fg-dark)',
+    INFO: 'var(--fg-dark)',
+  };
+
   return (
     <div>
-      <h2 className="text-accent text-sm mb-3">GAS LOG</h2>
-      <div className="bg-block text-[11px] leading-relaxed max-h-[300px] overflow-y-auto">
+      <h2 style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Gas Log</h2>
+      <div className="panel" style={{ padding: '16px 20px', maxHeight: 280, overflow: 'auto' }}>
         {loading ? (
-          <div className="text-dimmest">loading...</div>
+          <div style={{ fontSize: 11, color: 'var(--fg-dark)' }}>loading...</div>
         ) : (
           displayLogs.map((log, i) => {
             const time = new Date(log.timestamp).toLocaleTimeString('en-US', { hour12: false });
-            const typeColor = log.type === 'CLAIM' ? 'text-green' : log.type === 'SWAP' ? 'text-green' : log.type === 'LONG' ? 'text-accent' : 'text-dimmer';
             return (
-              <div key={i} className="flex gap-2">
-                <span className="text-dimmest shrink-0">[{time}]</span>
-                <span className={`shrink-0 ${typeColor}`}>{log.type.padEnd(7)}</span>
-                <span className="text-dim">{log.message}</span>
+              <div key={i} style={{ display: 'flex', gap: 12, padding: '5px 0', borderBottom: '1px solid var(--border)', fontSize: 11 }}>
+                <span style={{ color: 'var(--fg-dark)', flexShrink: 0, width: 56 }}>[{time}]</span>
+                <span style={{ color: typeColors[log.type] || 'var(--fg-dark)', flexShrink: 0, width: 56, fontWeight: 600, fontSize: 9, letterSpacing: '0.06em' }}>{log.type}</span>
+                <span style={{ color: 'var(--fg-dim)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.message}</span>
                 {log.txHash && (
-                  <a href={`https://solscan.io/tx/${log.txHash}`} target="_blank" rel="noopener" className="text-dimmest shrink-0">
-                    {log.txHash.slice(0, 8)}...
+                  <a href={`https://solscan.io/tx/${log.txHash}`} target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)', fontSize: 9, flexShrink: 0 }}>
+                    {log.txHash.slice(0, 8)}…
                   </a>
                 )}
               </div>
             );
           })
         )}
-        <div className="text-dimmest mt-1 cursor-blink" />
+        <div className="cursor-blink" style={{ marginTop: 4 }} />
       </div>
     </div>
   );
