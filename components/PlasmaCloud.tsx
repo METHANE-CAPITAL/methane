@@ -107,13 +107,13 @@ export default function PlasmaCloud() {
       if (p.pos.y + r > h || p.pos.y - r < 0) p.vel.y = -p.vel.y;
     }
 
-    // Color mapping — very subtle, just above background
+    // Color mapping — subtle green glow on mouse proximity
     function getColor(size: number): string {
       const t = Math.max(0, Math.min(1, (size - 6) / 30));
-      // Small: barely visible. Large (near mouse): soft green glow
-      const r = Math.floor(18 + t * 40);
-      const g = Math.floor(22 + t * 55);
-      const b = Math.floor(16 + t * 30);
+      // Small: barely visible dark. Large (near mouse): soft green glow
+      const r = Math.floor(16 + t * 25);
+      const g = Math.floor(20 + t * 65);
+      const b = Math.floor(14 + t * 20);
       return `rgb(${r},${g},${b})`;
     }
 

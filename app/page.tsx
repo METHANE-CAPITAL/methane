@@ -166,7 +166,12 @@ export default function Home() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="grid-responsive">
           <div className="panel" style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>🔑</div>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ marginBottom: 8 }}>
+              <rect x="4" y="8" width="20" height="16" rx="2" stroke="var(--green)" strokeWidth="1.5" />
+              <path d="M8 8V6a6 6 0 0112 0v2" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="14" cy="17" r="2" fill="var(--green)" />
+              <path d="M14 19v2" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>YOUR VAULT</div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
               Each project gets a dedicated Drift vault. Your fees → your position.
@@ -175,7 +180,11 @@ export default function Home() {
           </div>
 
           <div className="panel" style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>⚡</div>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ marginBottom: 8 }}>
+              <circle cx="14" cy="14" r="10" stroke="var(--green)" strokeWidth="1.5" />
+              <path d="M14 8v6l4 2" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M20 6l2-2M22 8l2 0" stroke="var(--green)" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>AUTONOMOUS</div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
               The agent runs every 15 minutes. Claims fees, swaps to USDC, deposits to Drift,
@@ -184,7 +193,11 @@ export default function Home() {
           </div>
 
           <div className="panel" style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>📈</div>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{ marginBottom: 8 }}>
+              <path d="M4 22L10 14L15 18L24 6" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M18 6h6v6" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <text x="7" y="26" fontSize="6" fill="var(--fg-dark)" fontFamily="inherit">5×</text>
+            </svg>
             <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>5× LEVERAGE</div>
             <p style={{ fontSize: 11, color: 'var(--fg-dim)', lineHeight: 1.6 }}>
               Your fees earn 5× the FART exposure. $100 in fees → $500 notional FART position.
