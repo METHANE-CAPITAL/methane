@@ -2,6 +2,9 @@ import FartClouds from '@/components/FartClouds';
 import StinkDivider from '@/components/StinkDivider';
 import GasLog from '@/components/GasLog';
 import FartChart from '@/components/FartChart';
+import PressureGauge from '@/components/PressureGauge';
+import MoleculeViz from '@/components/MoleculeViz';
+import PositionDashboard from '@/components/PositionDashboard';
 import {
   GasCloudIcon, FlameIcon, SkullIcon, GaugeIcon,
   ChartUpIcon, RecycleIcon, BombIcon, LeafIcon,
@@ -63,9 +66,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ===================== */}
-      {/* 1. HERO               */}
-      {/* ===================== */}
+      {/* 1. HERO */}
       <section className="relative z-10 pt-20 pb-12 md:pt-28 md:pb-16">
         <div className="max-w-[1100px] mx-auto px-6 text-center">
           <GasCloudIcon size={48} className="text-stink/40 mx-auto mb-5 animate-wobble" />
@@ -90,13 +91,11 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 2. WHY FART           */}
-      {/* ===================== */}
+      {/* 2. WHY FART — split: copy + molecule viz */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            {/* Left: the thesis */}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+            {/* Left: thesis */}
             <div>
               <h2 className="font-bungee text-xl md:text-2xl text-gas stink-glow mb-3">
                 Why Fartcoin?
@@ -108,13 +107,17 @@ export default function Home() {
               <p className="text-sm text-stink/35 leading-relaxed mb-4">
                 $METHANE doesn&apos;t compete with FART — we <span className="text-stink font-semibold">long</span> it.
                 Every fee we collect becomes leveraged FART exposure on Drift.
-                When FART pumps, we pump harder. That&apos;s the whole game.
+                When FART pumps, we pump harder.
               </p>
-              <p className="text-xs text-fart-tan/40 italic">
-                &quot;Others talk about farts. We leverage them.&quot;
-              </p>
+              <p className="text-xs text-fart-tan/40 italic">&quot;Others talk about farts. We leverage them.&quot;</p>
             </div>
-            {/* Right: links + key numbers */}
+
+            {/* Center: molecule */}
+            <div className="hidden md:flex flex-col items-center justify-center fart-cloud rounded-full p-4">
+              <MoleculeViz />
+            </div>
+
+            {/* Right: data card */}
             <div className="gas-border p-5">
               <div className="text-[9px] font-mono text-stink/20 mb-3">FARTCOIN ON SOLANA</div>
               <div className="grid grid-cols-2 gap-3 mb-4">
@@ -149,9 +152,7 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 3. HOW IT WORKS       */}
-      {/* ===================== */}
+      {/* 3. HOW IT WORKS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
           <h2 className="font-bungee text-xl md:text-2xl text-stink mb-2">How It Works</h2>
@@ -183,18 +184,15 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 4. THE CHART          */}
-      {/* ===================== */}
+      {/* 4. CHART + LIVE MARKET DATA */}
       <section className="relative z-10 py-10">
-        <div className="max-w-[1100px] mx-auto px-6">
+        <div className="max-w-[1100px] mx-auto px-6 space-y-4">
           <FartChart />
-        </div>
-      </section>
 
-      {/* POSITION STATUS — single bar, not a whole dashboard */}
-      <section className="relative z-10 pb-8">
-        <div className="max-w-[1100px] mx-auto px-6">
+          {/* Live Drift market data — this is REAL data, not empty */}
+          <PositionDashboard />
+
+          {/* Position status bar */}
           <div className="gas-border px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <GaugeIcon size={14} className="text-stink/30" />
@@ -212,9 +210,7 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 5. FOR YOUR TOKEN     */}
-      {/* ===================== */}
+      {/* 5. FOR YOUR TOKEN — GPaaS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
           <h2 className="font-bungee text-xl md:text-2xl text-stink mb-2">For Your Token</h2>
@@ -226,21 +222,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {[
               {
-                n: '1',
-                title: 'CONNECT',
-                Icon: GasCloudIcon,
+                n: '1', title: 'CONNECT', Icon: GasCloudIcon,
                 desc: 'Register your creator wallet address and set what percentage of fees you want routed to the vault.',
               },
               {
-                n: '2',
-                title: 'PIPELINE',
-                Icon: RecycleIcon,
+                n: '2', title: 'PIPELINE', Icon: RecycleIcon,
                 desc: 'Our agent monitors your wallet, claims fees, swaps to USDC, and deposits into the shared Drift Vault. Automatic.',
               },
               {
-                n: '3',
-                title: 'EARN',
-                Icon: ChartUpIcon,
+                n: '3', title: 'EARN', Icon: ChartUpIcon,
                 desc: 'Get proportional exposure to the leveraged FART position. Live dashboard. Embeddable widget. Real PnL.',
               },
             ].map((card, i) => (
@@ -257,30 +247,52 @@ export default function Home() {
             ))}
           </div>
 
-          {/* The flywheel */}
-          <div className="gas-border p-5 fart-cloud">
-            <div className="text-[9px] font-mono text-stink/20 mb-3">THE FLYWHEEL</div>
-            <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono">
-              {[
-                { text: 'More partners', color: 'text-stink/50' },
-                { text: '→', color: 'text-stink/15' },
-                { text: 'More fees', color: 'text-stink/50' },
-                { text: '→', color: 'text-stink/15' },
-                { text: 'Bigger vault', color: 'text-gas/50' },
-                { text: '→', color: 'text-stink/15' },
-                { text: 'Better returns', color: 'text-gas/50' },
-                { text: '→', color: 'text-stink/15' },
-                { text: 'More partners', color: 'text-stink/50' },
-              ].map((s, i) => (
-                <span key={i} className={`${s.color} font-bold`}>{s.text}</span>
-              ))}
+          {/* Flywheel — visual */}
+          <div className="gas-border fart-cloud overflow-hidden">
+            <div className="px-5 py-2.5 border-b border-stink/5">
+              <span className="text-[9px] font-mono text-stink/20">THE FLYWHEEL</span>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-3 text-[10px] font-mono text-stink/20">
-              <span>FART gets buy pressure ↑</span>
-              <span>·</span>
-              <span>$METHANE burns on profit ↓</span>
-              <span>·</span>
-              <span>Partners earn yield ↑</span>
+            <div className="p-6 flex flex-col items-center">
+              {/* Circular flow */}
+              <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
+                {/* Center */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <GasCloudIcon size={32} className="text-stink/30 mx-auto mb-1" />
+                    <div className="font-bungee text-xs text-stink/40">SHARED</div>
+                    <div className="font-bungee text-xs text-stink/40">VAULT</div>
+                  </div>
+                </div>
+                {/* Orbit items */}
+                {[
+                  { label: 'More Partners', pos: 'top-0 left-1/2 -translate-x-1/2', color: 'text-stink', Icon: GasCloudIcon },
+                  { label: 'More Fees', pos: 'top-1/2 right-0 -translate-y-1/2', color: 'text-gas', Icon: RecycleIcon },
+                  { label: 'Bigger Position', pos: 'bottom-0 left-1/2 -translate-x-1/2', color: 'text-stink', Icon: ChartUpIcon },
+                  { label: 'Better Returns', pos: 'top-1/2 left-0 -translate-y-1/2', color: 'text-gas', Icon: ChartUpIcon },
+                ].map((item, i) => (
+                  <div key={i} className={`absolute ${item.pos} flex flex-col items-center gap-1`}>
+                    <item.Icon size={18} className={`${item.color}/40`} />
+                    <span className={`text-[10px] font-bungee ${item.color}/50`}>{item.label}</span>
+                  </div>
+                ))}
+                {/* Connecting arcs (SVG) */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200" fill="none">
+                  <circle cx="100" cy="100" r="70" stroke="rgba(124,252,0,0.08)" strokeWidth="1" strokeDasharray="4 4" />
+                  {/* Arrows */}
+                  <path d="M135 30 L155 50" stroke="rgba(124,252,0,0.15)" strokeWidth="1" markerEnd="url(#arrow)" />
+                  <path d="M170 135 L155 155" stroke="rgba(124,252,0,0.15)" strokeWidth="1" />
+                  <path d="M65 170 L45 150" stroke="rgba(124,252,0,0.15)" strokeWidth="1" />
+                  <path d="M30 65 L45 45" stroke="rgba(124,252,0,0.15)" strokeWidth="1" />
+                </svg>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-[10px] font-mono text-stink/20">
+                <span>FART gets buy pressure ↑</span>
+                <span>·</span>
+                <span>$METHANE burns on profit ↓</span>
+                <span>·</span>
+                <span>Partners earn yield ↑</span>
+              </div>
             </div>
           </div>
         </div>
@@ -288,12 +300,11 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 6. MECHANICS          */}
-      {/* ===================== */}
+      {/* 6. PRESSURE + MECHANICS */}
       <section className="relative z-10 py-12">
         <div className="max-w-[1100px] mx-auto px-6">
-          <h2 className="font-bungee text-lg md:text-xl text-stink mb-5">The Mechanics</h2>
+          <h2 className="font-bungee text-lg md:text-xl text-stink mb-6">The Mechanics</h2>
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {MECHANICS.map((m, i) => (
               <div key={i} className="gas-border hover:border-stink/20 transition-all">
@@ -317,9 +328,7 @@ export default function Home() {
 
       <StinkDivider />
 
-      {/* ===================== */}
-      {/* 7. GAS LOG            */}
-      {/* ===================== */}
+      {/* 7. GAS LOG */}
       <section className="relative z-10 py-10">
         <div className="max-w-[1100px] mx-auto px-6">
           <GasLog />
