@@ -26,6 +26,17 @@ async function redisHGetAll(key: string) {
   } catch { return {}; }
 }
 
+async function redisGet(key: string): Promise<string | null> {
+  if (!REDIS_URL || !REDIS_TOKEN) return null;
+  try {
+    const res = await fetch(`${REDIS_URL}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+    });
+    const data = await res.json();
+    return data.result || null;
+  } catch { return null; }
+}
+
 export async function GET() {
   try {
     // Pull live position data from Lavarage
@@ -49,12 +60,27 @@ export async function GET() {
 
     const hasPosition = fartPositions.length > 0;
 
+    // Look up open-tx mapping for each active position from Redis.
+    // The agent writes `methane:position:<address>:openTx -> <sig>` when
+    // it opens a new position, so the UI shows verifiable Solscan links
+    // without any hardcoded map.
+    const openTxMap: Record<string, string> = {};
+    if (hasPosition) {
+      await Promise.all(
+        fartPositions.map(async (p: any) => {
+          const sig = await redisGet(`methane:position:${p.address}:openTx`);
+          if (sig) openTxMap[p.address] = sig;
+        }),
+      );
+    }
+
     // Build position summary
     const positionData = hasPosition ? {
       hasPosition: true,
       count: fartPositions.length,
       positions: fartPositions.map((p: any) => ({
         address: p.address,
+        openTx: openTxMap[p.address] || null,
         side: p.side || 'LONG',
         collateral: p.collateralHuman || (parseInt(p.collateralAmount) / 1e9),
         collateralUsd: p.collateralValueUsd,

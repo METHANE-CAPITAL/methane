@@ -11,6 +11,7 @@ interface PositionData {
     count: number;
     positions: Array<{
       address: string;
+      openTx: string | null;
       side: string;
       collateral: number;
       entryPrice: number;
@@ -35,15 +36,8 @@ interface PositionData {
   };
 }
 
-const TX_MAP: Record<string, string> = {
-  // historical (closed)
-  'CNjjro7WjmZzX268K3iWJYVBiYL4n9Qq9KSNvYH1pGPr': '2m9jCUjmUuYCkUkjmSTxS6qPvfdm7vAtcvxchTiDhgGFSjRiDrMuYWFBM9XmnU8eSUYSX7Fa8jdBPEftgNAAeWYy',
-  'GJKQarMYgFgPWAcqS2vAWBBhCVqWKkT5HRDGrnMPwxmz': '47RdCymwteC3ukbH2xEjhdXBXabUKkyS55A3q76U35urTtQbMUjBFNtmiLTzmpdVw7iwByeyPqepSdKU89UGNYgw',
-  // active
-  '7sgngtectpNpM4qfL51qPNVEP7YWaVhRytipgizWT3a1': 'p23F1RUToVRBavqLmsXaqDo8oVLuXfQ1aL4K6PcK5gKtfpijcTzoas3tTSVZ9US9A9HsvQgiGacU5dRD97i3f1P',
-  'AUSbt1eKFeEByyQGG16qTZLnnMuuTS3UUy8JzyqvF5Uf': 'ho9fVMUrPr4quMxCAikkuxJXh91efpN7radsUqcw5dCozvGgRKdYoRPehWaqrgLKRektVej7Frg3F7rv3SYfQda',
-  'DuNN659sTnoVhkXc6aeLmeTfvY35ZaaibtgAVE9KD4Jo': '2qqFgd9CUcVESebTzfVrpB2MhXLvXsGiHAQVn1e4NQGcaRotiuXhvcDtSVdYxmYTDmsVN47KtdnknAr8kNzrgBmb',
-};
+// Open-tx mapping lives in Redis, written by the agent when it opens a position.
+// /api/position returns p.openTx per active position, so this file has no hardcoded map.
 
 export default function PositionDashboard() {
   const [data, setData] = useState<PositionData | null>(null);
@@ -181,7 +175,7 @@ export default function PositionDashboard() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {pos!.positions.map((p, i) => {
-              const tx = TX_MAP[p.address] || '';
+              const tx = p.openTx || '';
               return (
                 <div key={p.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <a href={`https://app.lavarage.xyz/position/${p.address}`} target="_blank" rel="noopener"
