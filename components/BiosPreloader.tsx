@@ -190,19 +190,21 @@ export default function BiosPreloader({ onComplete }: { onComplete: () => void }
 
       <div style={{ position: 'relative', zIndex: 3, width: '100%', maxWidth: 520 }}>
         {/* ASCII METHANE — line by line reveal */}
-        <pre
-          style={{
-            fontSize: 'clamp(6px, 2.4vw, 12px)',
-            lineHeight: 1.15,
-            color: 'rgba(255,255,255,0.8)',
-            textAlign: 'center',
-            marginBottom: 12,
-            whiteSpace: 'pre',
-            overflow: 'hidden',
-          }}
-        >
-          {METHANE_ASCII.slice(0, asciiLines).join('\n')}
-        </pre>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12, overflow: 'hidden' }}>
+          <pre
+            style={{
+              fontSize: 'clamp(4.5px, 1.7vw, 11px)',
+              lineHeight: 1.2,
+              color: 'rgba(255,255,255,0.85)',
+              textAlign: 'left',
+              whiteSpace: 'pre',
+              margin: 0,
+              letterSpacing: '0.02em',
+            }}
+          >
+            {METHANE_ASCII.slice(0, asciiLines).join('\n')}
+          </pre>
+        </div>
 
         {/* Version + subheader */}
         {showVersion && (
