@@ -78,32 +78,41 @@ export async function GET() {
     const positionData = hasPosition ? {
       hasPosition: true,
       count: fartPositions.length,
-      positions: fartPositions.map((p: any) => ({
-        address: p.address,
-        openTx: openTxMap[p.address] || null,
-        side: p.side || 'LONG',
-        collateral: p.collateralHuman || (parseInt(p.collateralAmount) / 1e9),
-        collateralUsd: p.collateralValueUsd,
-        borrowed: p.borrowedAmount,
-        entryPrice: p.entryPrice,
-        currentPrice: p.currentPrice,
-        unrealizedPnl: p.unrealizedPnlUsd,
-        roiPercent: p.roiPercent,
-        liquidationPrice: p.liquidationPrice,
-        effectiveLeverage: p.effectiveLeverage,
-        interestAccrued: p.interestAccrued,
-        dailyInterestCost: p.dailyInterestCost,
-        interestRate: p.interestRate,
-        positionSize: p.positionSizeHuman,
-        baseToken: p.baseTokenSymbol,
-        quoteToken: p.quoteTokenSymbol,
-        currentLtv: p.currentLtv,
-        liquidationLtv: p.liquidationLtv,
-      })),
+      positions: fartPositions.map((p: any) => {
+        // Lavarage returns some numeric fields as strings. Coerce everything
+        // numeric to Number() so the UI can call .toFixed() safely. A single
+        // string field (e.g. entryPrice) was crashing the whole React tree.
+        const num = (v: any) => {
+          const n = Number(v);
+          return Number.isFinite(n) ? n : 0;
+        };
+        return {
+          address: p.address,
+          openTx: openTxMap[p.address] || null,
+          side: p.side || 'LONG',
+          collateral: num(p.collateralHuman ?? parseInt(p.collateralAmount) / 1e9),
+          collateralUsd: num(p.collateralValueUsd),
+          borrowed: num(p.borrowedAmount),
+          entryPrice: num(p.entryPrice),
+          currentPrice: num(p.currentPrice),
+          unrealizedPnl: num(p.unrealizedPnlUsd),
+          roiPercent: num(p.roiPercent),
+          liquidationPrice: num(p.liquidationPrice),
+          effectiveLeverage: num(p.effectiveLeverage),
+          interestAccrued: num(p.interestAccrued),
+          dailyInterestCost: num(p.dailyInterestCost),
+          interestRate: num(p.interestRate),
+          positionSize: num(p.positionSizeHuman),
+          baseToken: p.baseTokenSymbol,
+          quoteToken: p.quoteTokenSymbol,
+          currentLtv: num(p.currentLtv),
+          liquidationLtv: num(p.liquidationLtv),
+        };
+      }),
       totals: {
-        collateral: fartPositions.reduce((s: number, p: any) => s + (p.collateralHuman || parseInt(p.collateralAmount) / 1e9 || 0), 0),
-        pnl: fartPositions.reduce((s: number, p: any) => s + (parseFloat(p.unrealizedPnlUsd) || 0), 0),
-        avgLeverage: fartPositions.reduce((s: number, p: any) => s + (parseFloat(p.effectiveLeverage) || 0), 0) / fartPositions.length,
+        collateral: fartPositions.reduce((s: number, p: any) => s + (Number(p.collateralHuman) || parseInt(p.collateralAmount) / 1e9 || 0), 0),
+        pnl: fartPositions.reduce((s: number, p: any) => s + (Number(p.unrealizedPnlUsd) || 0), 0),
+        avgLeverage: fartPositions.reduce((s: number, p: any) => s + (Number(p.effectiveLeverage) || 0), 0) / fartPositions.length,
       },
     } : {
       hasPosition: false,

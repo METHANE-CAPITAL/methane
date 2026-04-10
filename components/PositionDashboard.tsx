@@ -115,40 +115,49 @@ export default function PositionDashboard() {
         SPOT LEVERAGE · LAVARAGE · SOL COLLATERAL → FART · <span style={{ color: 'var(--fg-dim)' }}>{hasPos ? `${pos!.count} ACTIVE POSITION${pos!.count > 1 ? 'S' : ''}` : 'LAUNCHING SOON'}</span>
       </div>
 
-      {/* Per-position detail rows */}
+      {/* Per-position detail rows. Defensive Number() coercion on every field:
+          the Lavarage API historically returns some numerics as strings, and a
+          single .toFixed() on a string crashes the whole React tree. */}
       {hasPos && pos!.positions.length > 0 && (
         <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
           <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>ACTIVE POSITIONS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {pos!.positions.map((p, i) => (
-              <div key={p.address} style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 1fr 1fr 1fr', gap: 10, alignItems: 'center', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}>
-                <div style={{ fontSize: 9, color: 'var(--fg-dark)' }}>#{i + 1}</div>
-                <div>
-                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>COLLATERAL</div>
-                  <div style={{ color: 'var(--fg-dim)' }}>{p.collateral.toFixed(3)} SOL</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>LEVERAGE</div>
-                  <div style={{ color: 'var(--fg-dim)' }}>{p.effectiveLeverage.toFixed(2)}×</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ENTRY</div>
-                  <div style={{ color: 'var(--fg-dim)' }}>${p.entryPrice.toFixed(6)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ROI</div>
-                  <div style={{ color: p.roiPercent >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                    {p.roiPercent >= 0 ? '+' : ''}{p.roiPercent.toFixed(2)}%
+            {pos!.positions.map((p, i) => {
+              const col = Number(p.collateral) || 0;
+              const lev = Number(p.effectiveLeverage) || 0;
+              const entry = Number(p.entryPrice) || 0;
+              const roi = Number(p.roiPercent) || 0;
+              const pnl = Number(p.unrealizedPnl) || 0;
+              return (
+                <div key={p.address} style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 1fr 1fr 1fr', gap: 10, alignItems: 'center', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}>
+                  <div style={{ fontSize: 9, color: 'var(--fg-dark)' }}>#{i + 1}</div>
+                  <div>
+                    <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>COLLATERAL</div>
+                    <div style={{ color: 'var(--fg-dim)' }}>{col.toFixed(3)} SOL</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>LEVERAGE</div>
+                    <div style={{ color: 'var(--fg-dim)' }}>{lev.toFixed(2)}×</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ENTRY</div>
+                    <div style={{ color: 'var(--fg-dim)' }}>${entry.toFixed(6)}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ROI</div>
+                    <div style={{ color: roi >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                      {roi >= 0 ? '+' : ''}{roi.toFixed(2)}%
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>PNL</div>
+                    <div style={{ color: pnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                      {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>PNL</div>
-                  <div style={{ color: p.unrealizedPnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                    {p.unrealizedPnl >= 0 ? '+' : ''}${p.unrealizedPnl.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
