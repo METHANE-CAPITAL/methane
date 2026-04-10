@@ -36,8 +36,12 @@ interface PositionData {
 }
 
 const TX_MAP: Record<string, string> = {
+  // historical (closed)
   'CNjjro7WjmZzX268K3iWJYVBiYL4n9Qq9KSNvYH1pGPr': '2m9jCUjmUuYCkUkjmSTxS6qPvfdm7vAtcvxchTiDhgGFSjRiDrMuYWFBM9XmnU8eSUYSX7Fa8jdBPEftgNAAeWYy',
   'GJKQarMYgFgPWAcqS2vAWBBhCVqWKkT5HRDGrnMPwxmz': '47RdCymwteC3ukbH2xEjhdXBXabUKkyS55A3q76U35urTtQbMUjBFNtmiLTzmpdVw7iwByeyPqepSdKU89UGNYgw',
+  // active
+  '7sgngtectpNpM4qfL51qPNVEP7YWaVhRytipgizWT3a1': 'p23F1RUToVRBavqLmsXaqDo8oVLuXfQ1aL4K6PcK5gKtfpijcTzoas3tTSVZ9US9A9HsvQgiGacU5dRD97i3f1P',
+  'AUSbt1eKFeEByyQGG16qTZLnnMuuTS3UUy8JzyqvF5Uf': 'ho9fVMUrPr4quMxCAikkuxJXh91efpN7radsUqcw5dCozvGgRKdYoRPehWaqrgLKRektVej7Frg3F7rv3SYfQda',
 };
 
 export default function PositionDashboard() {
@@ -116,6 +120,44 @@ export default function PositionDashboard() {
         SPOT LEVERAGE · LAVARAGE · SOL COLLATERAL → FART · <span style={{ color: 'var(--fg-dim)' }}>{hasPos ? `${pos!.count} ACTIVE POSITION${pos!.count > 1 ? 'S' : ''}` : 'LAUNCHING SOON'}</span>
       </div>
 
+      {/* Per-position detail rows */}
+      {hasPos && pos!.positions.length > 0 && (
+        <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>ACTIVE POSITIONS</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {pos!.positions.map((p, i) => (
+              <div key={p.address} style={{ display: 'grid', gridTemplateColumns: '24px 1fr 1fr 1fr 1fr 1fr', gap: 10, alignItems: 'center', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}>
+                <div style={{ fontSize: 9, color: 'var(--fg-dark)' }}>#{i + 1}</div>
+                <div>
+                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>COLLATERAL</div>
+                  <div style={{ color: 'var(--fg-dim)' }}>{p.collateral.toFixed(3)} SOL</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>LEVERAGE</div>
+                  <div style={{ color: 'var(--fg-dim)' }}>{p.effectiveLeverage.toFixed(2)}×</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ENTRY</div>
+                  <div style={{ color: 'var(--fg-dim)' }}>${p.entryPrice.toFixed(6)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>ROI</div>
+                  <div style={{ color: p.roiPercent >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                    {p.roiPercent >= 0 ? '+' : ''}{p.roiPercent.toFixed(2)}%
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 8, color: 'var(--fg-dark)', letterSpacing: '0.06em' }}>PNL</div>
+                  <div style={{ color: p.unrealizedPnl >= 0 ? 'var(--green)' : 'var(--red)' }}>
+                    {p.unrealizedPnl >= 0 ? '+' : ''}${p.unrealizedPnl.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* On-Chain Verification */}
       {hasPos && data?.agentWallet && (
         <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
@@ -139,17 +181,24 @@ export default function PositionDashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {pos!.positions.map((p, i) => {
               const tx = TX_MAP[p.address] || '';
-              return tx ? (
+              return (
                 <div key={p.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 9, color: 'var(--fg-dark)' }}>
-                    pos {i + 1}: {p.collateral.toFixed(3)} SOL @ {p.effectiveLeverage.toFixed(1)}×
-                  </span>
-                  <a href={`https://solscan.io/tx/${tx}`} target="_blank" rel="noopener"
-                    style={{ fontSize: 9, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
-                    tx: {tx.slice(0, 6)}...{tx.slice(-6)} ↗
+                  <a href={`https://app.lavarage.xyz/position/${p.address}`} target="_blank" rel="noopener"
+                    style={{ fontSize: 9, color: 'var(--fg-dark)', textDecoration: 'none', fontFamily: 'JetBrains Mono, monospace' }}>
+                    pos {i + 1}: {p.address.slice(0, 6)}...{p.address.slice(-6)} ↗
                   </a>
+                  {tx ? (
+                    <a href={`https://solscan.io/tx/${tx}`} target="_blank" rel="noopener"
+                      style={{ fontSize: 9, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                      open tx: {tx.slice(0, 6)}...{tx.slice(-6)} ↗
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: 9, color: 'var(--fg-dark)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      open tx: pending
+                    </span>
+                  )}
                 </div>
-              ) : null;
+              );
             })}
           </div>
         </div>
