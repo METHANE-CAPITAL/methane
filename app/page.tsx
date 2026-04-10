@@ -288,13 +288,11 @@ export default function Home() {
             <div key={i} className="panel mechanic-card" style={{ padding: '16px 20px', position: 'relative', cursor: 'default' }}
               onMouseEnter={e => {
                 const tip = e.currentTarget.querySelector('.mechanic-tooltip') as HTMLElement;
-                if (tip) tip.style.opacity = '1';
-                if (tip) tip.style.pointerEvents = 'auto';
+                if (tip) { tip.style.opacity = '1'; tip.style.transform = 'translateY(0)'; tip.style.pointerEvents = 'auto'; }
               }}
               onMouseLeave={e => {
                 const tip = e.currentTarget.querySelector('.mechanic-tooltip') as HTMLElement;
-                if (tip) tip.style.opacity = '0';
-                if (tip) tip.style.pointerEvents = 'none';
+                if (tip) { tip.style.opacity = '0'; tip.style.transform = 'translateY(4px)'; tip.style.pointerEvents = 'none'; }
               }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
                 <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>{m.name}</span>
@@ -305,15 +303,20 @@ export default function Home() {
                   <span style={{ color: 'var(--fg-dark)', marginRight: 6 }}>›</span>{s}
                 </div>
               ))}
-              {/* Tooltip */}
+              {/* Tooltip — overlays above card */}
               <div className="mechanic-tooltip" style={{
-                position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 20,
-                marginTop: 4, padding: '14px 18px',
-                background: '#1a1a1a', border: '1px solid var(--border-med)',
-                fontSize: 11, color: 'var(--fg)', lineHeight: 1.7,
+                position: 'absolute', left: -1, right: -1, bottom: '100%', zIndex: 50,
+                marginBottom: 8, padding: '16px 20px',
+                background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 2,
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)',
+                fontSize: 11, color: 'var(--fg)', lineHeight: 1.8, letterSpacing: '0.01em',
                 opacity: 0, pointerEvents: 'none',
-                transition: 'opacity 0.2s ease',
+                transform: 'translateY(4px)',
+                transition: 'opacity 0.2s ease, transform 0.2s ease',
               }}>
+                <div style={{ fontSize: 9, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', marginBottom: 8, textTransform: 'uppercase' }}>{m.name} — how it works</div>
                 {m.detail}
               </div>
             </div>
