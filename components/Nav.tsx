@@ -18,7 +18,7 @@ export default function Nav() {
   const external = [
     { label: 'pump.fun', href: '#', icon: '/icons/pumpfun.png' },
     { label: 'dexscreener', href: '#', icon: '/icons/dexscreener.png' },
-    { label: 'lavarage', href: 'https://lavarage.xyz', icon: '/icons/lavarage.png' },
+
     { label: 'twitter', href: '#', icon: '' },
     { label: 'github', href: 'https://github.com/METHANE-CAPITAL/methane', icon: '' },
   ];
