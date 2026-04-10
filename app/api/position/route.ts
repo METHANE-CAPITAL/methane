@@ -29,7 +29,7 @@ async function redisHGetAll(key: string) {
 async function redisGet(key: string): Promise<string | null> {
   if (!REDIS_URL || !REDIS_TOKEN) return null;
   try {
-    const res = await fetch(`${REDIS_URL}/get/${encodeURIComponent(key)}`, {
+    const res = await fetch(`${REDIS_URL}/get/${key}`, {
       headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
     });
     const data = await res.json();
