@@ -422,14 +422,18 @@ export default function FartChart() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex gap-0.5">
+          <div style={{ display: 'flex', gap: 2 }}>
             {(Object.keys(TF_CONFIG) as Timeframe[]).map(tf => (
               <button key={tf} onClick={() => setTimeframe(tf)}
-                className="px-1.5 py-0.5 text-[10px] transition-colors"
                 style={{
+                  padding: '2px 6px',
+                  fontSize: 10,
                   color: timeframe === tf ? 'var(--accent)' : 'var(--fg-dark)',
                   background: timeframe === tf ? 'rgba(255,255,255,0.06)' : 'transparent',
                   border: timeframe === tf ? '1px solid var(--border)' : '1px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'color 0.15s',
+                  fontFamily: 'JetBrains Mono, monospace',
                 }}>{TF_CONFIG[tf].label}</button>
             ))}
           </div>
@@ -465,12 +469,14 @@ export default function FartChart() {
         )}
       </div>
 
-      <div className="flex gap-6 mt-2 text-[10px] text-dimmest">
-        {position.entryPrice > 0 && <span>entry: <span className="text-green">${position.entryPrice.toFixed(4)}</span></span>}
-        {position.liquidationPrice > 0 && <span>liq: <span className="text-red">${position.liquidationPrice.toFixed(4)}</span></span>}
-        <span>leverage: <span className="text-dim">{position.leverage.toFixed(1)}x</span></span>
-        {currentP > 0 && position.entryPrice > 0 && <span>PnL: <span className={pnlPct >= 0 ? 'text-green' : 'text-red'}>{pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(1)}%</span></span>}
-        <span className="ml-auto">scroll to zoom · drag to pan</span>
+      <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 10, color: 'var(--fg-dark)', fontFamily: 'JetBrains Mono, monospace', flexWrap: 'wrap', alignItems: 'center' }}>
+        {position.entryPrice > 0 && <span>entry: <span style={{ color: 'var(--green)' }}>${position.entryPrice.toFixed(4)}</span></span>}
+        {position.entryPrice > 0 && position.liquidationPrice > 0 && <span style={{ color: 'var(--border)' }}>|</span>}
+        {position.liquidationPrice > 0 && <span>liq: <span style={{ color: 'var(--red)' }}>${position.liquidationPrice.toFixed(4)}</span></span>}
+        <span style={{ color: 'var(--border)' }}>|</span>
+        <span>leverage: <span style={{ color: 'var(--fg-dim)' }}>{position.leverage.toFixed(1)}x</span></span>
+        {currentP > 0 && position.entryPrice > 0 && <><span style={{ color: 'var(--border)' }}>|</span><span>PnL: <span style={{ color: pnlPct >= 0 ? 'var(--green)' : 'var(--red)' }}>{pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(1)}%</span></span></>}
+        <span style={{ marginLeft: 'auto', color: 'var(--fg-dark)', opacity: 0.5 }}>scroll to zoom · drag to pan</span>
       </div>
     </div>
   );

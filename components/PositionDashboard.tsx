@@ -5,10 +5,12 @@ import { useEffect, useState } from 'react';
 interface PositionData {
   live: boolean;
   venue: string;
+  agentWallet: string;
   position: {
     hasPosition: boolean;
     count: number;
     positions: Array<{
+      address: string;
       side: string;
       collateral: number;
       entryPrice: number;
@@ -32,6 +34,11 @@ interface PositionData {
     longCount: number;
   };
 }
+
+const TX_MAP: Record<string, string> = {
+  'CNjjro7WjmZzX268K3iWJYVBiYL4n9Qq9KSNvYH1pGPr': '2m9jCUjmUuYCkUkjmSTxS6qPvfdm7vAtcvxchTiDhgGFSjRiDrMuYWFBM9XmnU8eSUYSX7Fa8jdBPEftgNAAeWYy',
+  'GJKQarMYgFgPWAcqS2vAWBBhCVqWKkT5HRDGrnMPwxmz': '47RdCymwteC3ukbH2xEjhdXBXabUKkyS55A3q76U35urTtQbMUjBFNtmiLTzmpdVw7iwByeyPqepSdKU89UGNYgw',
+};
 
 export default function PositionDashboard() {
   const [data, setData] = useState<PositionData | null>(null);
@@ -108,6 +115,45 @@ export default function PositionDashboard() {
       <div style={{ marginTop: 14, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 10, color: 'var(--fg-dark)', letterSpacing: '0.05em' }}>
         SPOT LEVERAGE · LAVARAGE · SOL COLLATERAL → FART · <span style={{ color: 'var(--fg-dim)' }}>{hasPos ? `${pos!.count} ACTIVE POSITION${pos!.count > 1 ? 'S' : ''}` : 'LAUNCHING SOON'}</span>
       </div>
+
+      {/* On-Chain Verification */}
+      {hasPos && data?.agentWallet && (
+        <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 10 }}>ON-CHAIN VERIFICATION</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 10 }}>
+            <div>
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', marginBottom: 4 }}>AGENT WALLET</div>
+              <a href={`https://solscan.io/account/${data.agentWallet}`} target="_blank" rel="noopener"
+                style={{ fontSize: 10, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                {data.agentWallet.slice(0, 6)}...{data.agentWallet.slice(-6)} ↗
+              </a>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, color: 'var(--fg-dark)', marginBottom: 4 }}>POSITION</div>
+              <a href={`https://app.lavarage.xyz/position/${pos!.positions[0]?.address || ''}`} target="_blank" rel="noopener"
+                style={{ fontSize: 10, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                {(pos!.positions[0]?.address || '').slice(0, 6)}...{(pos!.positions[0]?.address || '').slice(-6)} ↗
+              </a>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {pos!.positions.map((p, i) => {
+              const tx = TX_MAP[p.address] || '';
+              return tx ? (
+                <div key={p.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 9, color: 'var(--fg-dark)' }}>
+                    pos {i + 1}: {p.collateral.toFixed(3)} SOL @ {p.effectiveLeverage.toFixed(1)}×
+                  </span>
+                  <a href={`https://solscan.io/tx/${tx}`} target="_blank" rel="noopener"
+                    style={{ fontSize: 9, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                    tx: {tx.slice(0, 6)}...{tx.slice(-6)} ↗
+                  </a>
+                </div>
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
