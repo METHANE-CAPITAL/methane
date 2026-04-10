@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export const runtime = 'edge';
 
 const LAVARAGE_API = 'https://api.lavarage.xyz';
-const LAVARAGE_KEY = 'REDACTED_LAVARAGE_KEY';
+const LAVARAGE_KEY = process.env.LAVARAGE_API_KEY || '';
 const AGENT_WALLET = 'FXf5jhkD7HoyrRrbtWfN29YZGVTQDnDSqaQVdZfQ6TKd';
 const FART_MINT = '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump';
 

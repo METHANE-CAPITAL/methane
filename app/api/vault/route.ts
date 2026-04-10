@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 const REDIS_URL = process.env.UPSTASH_REDIS_URL || '';
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_TOKEN || '';
 const LAVARAGE_API = 'https://api.lavarage.xyz';
-const LAVARAGE_KEY = 'REDACTED_LAVARAGE_KEY';
+const LAVARAGE_KEY = process.env.LAVARAGE_API_KEY || '';
 const FART_MINT = '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump';
 
 async function redisCmd(cmd: string, ...args: string[]) {
