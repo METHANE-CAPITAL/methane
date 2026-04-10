@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import PlasmaCloud from '@/components/PlasmaCloud';
 import WalletProvider from '@/components/WalletProvider';
+import BootWrapper from '@/components/BootWrapper';
 
 export const metadata: Metadata = {
   title: '$METHANE — Gas as a Service | Leveraged FART Infrastructure',
@@ -13,8 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <WalletProvider>
-          <PlasmaCloud />
-          <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
+          <BootWrapper>
+            <PlasmaCloud />
+            <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
+          </BootWrapper>
         </WalletProvider>
       </body>
     </html>
