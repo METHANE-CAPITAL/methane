@@ -4,26 +4,24 @@ import { useState, useEffect, useCallback } from 'react';
 import BiosPreloader from './BiosPreloader';
 
 const SKIP_KEY = 'methane_booted';
-const SKIP_TTL = 1000 * 60 * 30; // 30 min — show again after
 
 export default function BootWrapper({ children }: { children: React.ReactNode }) {
   const [booted, setBooted] = useState(false);
   const [skipBoot, setSkipBoot] = useState(false);
 
   useEffect(() => {
-    // Check if recently booted
+    // Check if already booted this tab
     try {
-      const ts = localStorage.getItem(SKIP_KEY);
-      if (ts && Date.now() - Number(ts) < SKIP_TTL) {
+      if (sessionStorage.getItem(SKIP_KEY)) {
         setSkipBoot(true);
         setBooted(true);
       }
-    } catch { /* no localStorage */ }
+    } catch { /* no sessionStorage */ }
 
     // Allow any keypress or click to skip during boot
     const handler = () => {
       setBooted(true);
-      try { localStorage.setItem(SKIP_KEY, String(Date.now())); } catch {}
+      try { sessionStorage.setItem(SKIP_KEY, '1'); } catch {}
     };
     window.addEventListener('keydown', handler);
     window.addEventListener('click', handler);
@@ -35,7 +33,7 @@ export default function BootWrapper({ children }: { children: React.ReactNode })
 
   const handleComplete = useCallback(() => {
     setBooted(true);
-    try { localStorage.setItem(SKIP_KEY, String(Date.now())); } catch {}
+    try { sessionStorage.setItem(SKIP_KEY, '1'); } catch {}
   }, []);
 
   return (
