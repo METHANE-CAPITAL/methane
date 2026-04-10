@@ -42,6 +42,7 @@ const TX_MAP: Record<string, string> = {
   // active
   '7sgngtectpNpM4qfL51qPNVEP7YWaVhRytipgizWT3a1': 'p23F1RUToVRBavqLmsXaqDo8oVLuXfQ1aL4K6PcK5gKtfpijcTzoas3tTSVZ9US9A9HsvQgiGacU5dRD97i3f1P',
   'AUSbt1eKFeEByyQGG16qTZLnnMuuTS3UUy8JzyqvF5Uf': 'ho9fVMUrPr4quMxCAikkuxJXh91efpN7radsUqcw5dCozvGgRKdYoRPehWaqrgLKRektVej7Frg3F7rv3SYfQda',
+  'DuNN659sTnoVhkXc6aeLmeTfvY35ZaaibtgAVE9KD4Jo': '2qqFgd9CUcVESebTzfVrpB2MhXLvXsGiHAQVn1e4NQGcaRotiuXhvcDtSVdYxmYTDmsVN47KtdnknAr8kNzrgBmb',
 };
 
 export default function PositionDashboard() {
