@@ -60,6 +60,15 @@ function fmtUsd(n: number | undefined): string {
   return `$${n.toFixed(2)}`;
 }
 
+// Map position addresses to their creation transaction signatures
+function getPositionTx(positionAddress: string): string {
+  const txMap: Record<string, string> = {
+    'CNjjro7WjmZzX268K3iWJYVBiYL4n9Qq9KSNvYH1pGPr': '2m9jCUjmUuYCkUkjmSTxS6qPvfdm7vAtcvxchTiDhgGFSjRiDrMuYWFBM9XmnU8eSUYSX7Fa8jdBPEftgNAAeWYy',
+    'GJKQarMYgFgPWAcqS2vAWBBhCVqWKkT5HRDGrnMPwxmz': '47RdCymwteC3ukbH2xEjhdXBXabUKkyS55A3q76U35urTtQbMUjBFNtmiLTzmpdVw7iwByeyPqepSdKU89UGNYgw',
+  };
+  return txMap[positionAddress] || 'unknown';
+}
+
 export default function PositionTracker() {
   const [data, setData] = useState<PositionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,6 +136,45 @@ export default function PositionTracker() {
           </div>
         )}
       </div>
+
+      {/* Verification Section */}
+      {hasPos && (
+        <div className="panel" style={{ padding: '20px 24px', marginBottom: 12 }}>
+          <div style={{ fontSize: 9, color: 'var(--fg-dark)', letterSpacing: '0.08em', marginBottom: 12 }}>ON-CHAIN VERIFICATION</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, fontSize: 11 }}>
+            <div>
+              <div style={{ marginBottom: 8, color: 'var(--fg-dim)' }}>Agent Wallet</div>
+              <a href={`https://solscan.io/account/${data?.agentWallet}`} target="_blank" rel="noopener"
+                style={{ fontSize: 10, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                {data?.agentWallet?.slice(0, 8)}...{data?.agentWallet?.slice(-8)} ↗
+              </a>
+            </div>
+            <div>
+              <div style={{ marginBottom: 8, color: 'var(--fg-dim)' }}>Position Address</div>
+              <a href={`https://app.lavarage.xyz/position/${p?.address}`} target="_blank" rel="noopener"
+                style={{ fontSize: 10, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                {p?.address?.slice(0, 8)}...{p?.address?.slice(-8)} ↗
+              </a>
+            </div>
+          </div>
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+            <div style={{ marginBottom: 8, color: 'var(--fg-dim)', fontSize: 11 }}>Position Open Transactions</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {pos?.positions?.map((position, i) => (
+                <div key={position.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 10, color: 'var(--fg-dark)' }}>
+                    Position {i + 1}: {fmt(position.collateral, 3)} SOL @ {fmt(position.effectiveLeverage, 1)}×
+                  </span>
+                  <a href={`https://solscan.io/tx/${getPositionTx(position.address)}`} target="_blank" rel="noopener"
+                    style={{ fontSize: 9, color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', textDecoration: 'none' }}>
+                    {getPositionTx(position.address).slice(0, 8)}...{getPositionTx(position.address).slice(-8)} ↗
+                  </a>
+                </div>
+              )) || []}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pipeline Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="grid-responsive">
