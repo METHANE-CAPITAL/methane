@@ -10,6 +10,7 @@ export default function Nav() {
 
   const links = [
     { label: 'home', href: '/' },
+    { label: 'docs', href: '/docs' },
     { label: 'vaults', href: '/vaults' },
     { label: 'plug in', href: '/#plug-in' },
   ];
