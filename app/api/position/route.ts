@@ -30,7 +30,7 @@ export async function GET() {
   try {
     // Pull live position data from Lavarage
     const posRes = await fetch(
-      `${LAVARAGE_API}/api/v1/positions?owner=${AGENT_WALLET}&status=EXECUTED`,
+      `${LAVARAGE_API}/api/v1/positions?owner=${AGENT_WALLET}&status=OPEN`,
       { headers: { 'x-api-key': LAVARAGE_KEY, 'Content-Type': 'application/json' } }
     );
 
@@ -40,7 +40,7 @@ export async function GET() {
     if (posRes.ok) {
       positions = await posRes.json();
       fartPositions = positions.filter(
-        (p: any) => p.baseToken?.address === FART_MINT || p.tradedTokenAddress === FART_MINT
+        (p: any) => p.offerBaseTokenAddress === FART_MINT || p.baseToken?.address === FART_MINT || p.tradedTokenAddress === FART_MINT
       );
     }
 
@@ -56,7 +56,8 @@ export async function GET() {
       positions: fartPositions.map((p: any) => ({
         address: p.address,
         side: p.side || 'LONG',
-        collateral: p.collateralAmount,
+        collateral: p.collateralHuman || (parseInt(p.collateralAmount) / 1e9),
+        collateralUsd: p.collateralValueUsd,
         borrowed: p.borrowedAmount,
         entryPrice: p.entryPrice,
         currentPrice: p.currentPrice,
@@ -66,11 +67,15 @@ export async function GET() {
         effectiveLeverage: p.effectiveLeverage,
         interestAccrued: p.interestAccrued,
         dailyInterestCost: p.dailyInterestCost,
-        baseToken: p.baseToken?.symbol,
-        quoteToken: p.quoteToken?.symbol,
+        interestRate: p.interestRate,
+        positionSize: p.positionSizeHuman,
+        baseToken: p.baseTokenSymbol,
+        quoteToken: p.quoteTokenSymbol,
+        currentLtv: p.currentLtv,
+        liquidationLtv: p.liquidationLtv,
       })),
       totals: {
-        collateral: fartPositions.reduce((s: number, p: any) => s + (parseFloat(p.collateralAmount) || 0), 0),
+        collateral: fartPositions.reduce((s: number, p: any) => s + (p.collateralHuman || parseInt(p.collateralAmount) / 1e9 || 0), 0),
         pnl: fartPositions.reduce((s: number, p: any) => s + (parseFloat(p.unrealizedPnlUsd) || 0), 0),
         avgLeverage: fartPositions.reduce((s: number, p: any) => s + (parseFloat(p.effectiveLeverage) || 0), 0) / fartPositions.length,
       },

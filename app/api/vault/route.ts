@@ -63,13 +63,13 @@ export async function GET(request: Request) {
     let positions: any[] = [];
     try {
       const posRes = await fetch(
-        `${LAVARAGE_API}/api/v1/positions?owner=${vault.vaultAddress}&status=EXECUTED`,
+        `${LAVARAGE_API}/api/v1/positions?owner=${vault.vaultAddress}&status=OPEN`,
         { headers: { 'x-api-key': LAVARAGE_KEY, 'Content-Type': 'application/json' } }
       );
       if (posRes.ok) {
         const allPos = await posRes.json();
         positions = allPos.filter(
-          (p: any) => p.baseToken?.address === FART_MINT || p.tradedTokenAddress === FART_MINT
+          (p: any) => p.offerBaseTokenAddress === FART_MINT || p.baseToken?.address === FART_MINT || p.tradedTokenAddress === FART_MINT
         );
       }
     } catch { /* silent */ }
