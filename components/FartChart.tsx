@@ -10,11 +10,11 @@ interface Candle {
   close: number;
 }
 
-const POSITION = {
-  entryPrice: 0.148,
-  liquidationPrice: 0.118,
-  leverage: 5,
-};
+interface PositionData {
+  entryPrice: number;
+  liquidationPrice: number;
+  leverage: number;
+}
 
 export default function FartChart() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,6 +23,7 @@ export default function FartChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [timeframe, setTimeframe] = useState<'24h' | '7d'>('24h');
+  const [position, setPosition] = useState<PositionData>({ entryPrice: 0, liquidationPrice: 0, leverage: 5 });
 
   const fetchCandles = useCallback(async () => {
     try {
@@ -59,6 +60,30 @@ export default function FartChart() {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch live position data
+  useEffect(() => {
+    const fetchPosition = async () => {
+      try {
+        const res = await fetch('/api/position');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.live && data.position?.positions?.length > 0) {
+          // Use the largest position (most collateral)
+          const positions = data.position.positions;
+          const main = positions.sort((a: any, b: any) => (b.collateral || 0) - (a.collateral || 0))[0];
+          setPosition({
+            entryPrice: parseFloat(main.entryPrice) || 0,
+            liquidationPrice: parseFloat(main.liquidationPrice) || 0,
+            leverage: parseFloat(main.effectiveLeverage) || 5,
+          });
+        }
+      } catch { /* silent */ }
+    };
+    fetchPosition();
+    const interval = setInterval(fetchPosition, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const drawChart = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !candles.length) return;
@@ -77,7 +102,8 @@ export default function FartChart() {
     const ch = h - pad.top - pad.bottom;
 
     const allPrices = candles.flatMap(c => [c.high, c.low]);
-    allPrices.push(POSITION.entryPrice, POSITION.liquidationPrice);
+    if (position.entryPrice > 0) allPrices.push(position.entryPrice);
+    if (position.liquidationPrice > 0) allPrices.push(position.liquidationPrice);
     if (livePrice) allPrices.push(livePrice);
     const minP = Math.min(...allPrices) * 0.995;
     const maxP = Math.max(...allPrices) * 1.005;
@@ -128,32 +154,36 @@ export default function FartChart() {
       ctx.globalAlpha = 1;
     });
 
-    // Entry price line
-    const entryY = toY(POSITION.entryPrice);
-    ctx.beginPath();
-    ctx.setLineDash([6, 4]);
-    ctx.moveTo(pad.left, entryY);
-    ctx.lineTo(w - pad.right, entryY);
-    ctx.strokeStyle = '#66ff66';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#66ff66';
-    ctx.font = 'bold 9px IBM Plex Mono, monospace';
-    ctx.fillText(`ENTRY $${POSITION.entryPrice.toFixed(4)}`, w - pad.right + 6, entryY - 4);
+    // Entry price line (only if position is active)
+    if (position.entryPrice > 0) {
+      const entryY = toY(position.entryPrice);
+      ctx.beginPath();
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(pad.left, entryY);
+      ctx.lineTo(w - pad.right, entryY);
+      ctx.strokeStyle = '#66ff66';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#66ff66';
+      ctx.font = 'bold 9px IBM Plex Mono, monospace';
+      ctx.fillText(`ENTRY $${position.entryPrice.toFixed(4)}`, w - pad.right + 6, entryY - 4);
+    }
 
-    // Liquidation line
-    const liqY = toY(POSITION.liquidationPrice);
-    ctx.beginPath();
-    ctx.setLineDash([4, 4]);
-    ctx.moveTo(pad.left, liqY);
-    ctx.lineTo(w - pad.right, liqY);
-    ctx.strokeStyle = '#ff6666';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#ff6666';
-    ctx.fillText(`LIQ $${POSITION.liquidationPrice.toFixed(4)}`, w - pad.right + 6, liqY - 4);
+    // Liquidation line (only if position is active)
+    if (position.liquidationPrice > 0) {
+      const liqY = toY(position.liquidationPrice);
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(pad.left, liqY);
+      ctx.lineTo(w - pad.right, liqY);
+      ctx.strokeStyle = '#ff6666';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#ff6666';
+      ctx.fillText(`LIQ $${position.liquidationPrice.toFixed(4)}`, w - pad.right + 6, liqY - 4);
+    }
 
     // Live price line
     const currentP = livePrice || candles[candles.length - 1].close;
@@ -195,13 +225,13 @@ export default function FartChart() {
       ctx.textAlign = 'center';
       ctx.fillText(label, x, h - 6);
     }
-  }, [candles, livePrice, timeframe]);
+  }, [candles, livePrice, timeframe, position]);
 
   useEffect(() => { drawChart(); window.addEventListener('resize', drawChart); return () => window.removeEventListener('resize', drawChart); }, [drawChart]);
 
   const currentP = livePrice || (candles.length ? candles[candles.length - 1].close : 0);
-  const pnlPct = currentP && POSITION.entryPrice
-    ? ((currentP - POSITION.entryPrice) / POSITION.entryPrice * POSITION.leverage * 100) : 0;
+  const pnlPct = currentP && position.entryPrice
+    ? ((currentP - position.entryPrice) / position.entryPrice * position.leverage * 100) : 0;
 
   return (
     <div>
@@ -240,9 +270,9 @@ export default function FartChart() {
       </div>
 
       <div className="flex gap-6 mt-2 text-[10px] text-dimmest">
-        <span>entry: <span className="text-green">${POSITION.entryPrice}</span></span>
-        <span>liq: <span className="text-red">${POSITION.liquidationPrice}</span></span>
-        <span>leverage: <span className="text-dim">{POSITION.leverage}x</span></span>
+        {position.entryPrice > 0 && <span>entry: <span className="text-green">${position.entryPrice.toFixed(4)}</span></span>}
+        {position.liquidationPrice > 0 && <span>liq: <span className="text-red">${position.liquidationPrice.toFixed(4)}</span></span>}
+        <span>leverage: <span className="text-dim">{position.leverage.toFixed(1)}x</span></span>
         {currentP > 0 && <span>PnL: <span className={pnlPct >= 0 ? 'text-green' : 'text-red'}>{pnlPct >= 0 ? '+' : ''}{pnlPct.toFixed(1)}%</span></span>}
       </div>
     </div>
