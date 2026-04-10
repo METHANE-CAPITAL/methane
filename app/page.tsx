@@ -63,6 +63,11 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="grid-responsive">
           <div>
+            <img
+              src="/methane-logo.png"
+              alt="$METHANE"
+              style={{ width: 120, height: 120, opacity: 0.85, marginBottom: 20, filter: 'grayscale(0.15)' }}
+            />
             <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 16, lineHeight: 1.5 }}>
               Fartcoin deserves an ecosystem.
             </h2>
