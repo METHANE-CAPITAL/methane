@@ -63,11 +63,6 @@ export default function Home() {
       <section className="reveal" style={{ paddingBottom: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }} className="grid-responsive">
           <div>
-            <img
-              src="/methane-logo.png"
-              alt="$METHANE"
-              style={{ width: 120, height: 120, opacity: 0.85, marginBottom: 20, filter: 'grayscale(0.15)' }}
-            />
             <h2 style={{ fontSize: 14, color: 'var(--white)', fontWeight: 700, marginBottom: 16, lineHeight: 1.5 }}>
               Fartcoin deserves an ecosystem.
             </h2>
@@ -85,6 +80,11 @@ export default function Home() {
               tools that grow their treasury, create buy pressure on FART, and strengthen the whole ecosystem.
               <span style={{ color: 'var(--green)' }}> Everyone benefits. That&apos;s the point.</span>
             </p>
+            <img
+              src="/methane-logo.png"
+              alt="$METHANE"
+              style={{ width: 220, height: 220, opacity: 0.85, marginTop: 24, filter: 'grayscale(0.15)' }}
+            />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
