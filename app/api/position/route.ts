@@ -4,7 +4,7 @@ export const runtime = 'edge';
 
 const LAVARAGE_API = 'https://api.lavarage.xyz';
 const LAVARAGE_KEY = process.env.LAVARAGE_API_KEY || '';
-const AGENT_WALLET = 'FXf5jhkD7HoyrRrbtWfN29YZGVTQDnDSqaQVdZfQ6TKd';
+const AGENT_WALLET = '2i1i4UJBWKu9Uc35nM6M5FBdvEoHuKQS3TdngfnR6qxw';
 const FART_MINT = '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump';
 
 const REDIS_URL = process.env.UPSTASH_REDIS_URL || '';

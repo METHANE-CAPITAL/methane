@@ -368,7 +368,7 @@ log(position, redis)`}</Code>
         <div style={{ fontSize: 9, color: 'var(--fg-floor)', marginTop: 6 }}>
           <Link href="/" style={{ color: 'var(--fg-dark)' }}>home</Link>
           {' · '}
-          <a href="https://solscan.io/account/FXf5jhkD7HoyrRrbtWfN29YZGVTQDnDSqaQVdZfQ6TKd" target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)' }}>solscan</a>
+          <a href="https://solscan.io/account/2i1i4UJBWKu9Uc35nM6M5FBdvEoHuKQS3TdngfnR6qxw" target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)' }}>solscan</a>
           {' · '}
           <a href="https://lavarage.xyz" target="_blank" rel="noopener" style={{ color: 'var(--fg-dark)' }}>lavarage</a>
         </div>
