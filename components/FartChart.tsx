@@ -24,6 +24,7 @@ export default function FartChart() {
   const [error, setError] = useState(false);
   const [timeframe, setTimeframe] = useState<'24h' | '7d'>('24h');
   const [position, setPosition] = useState<PositionData>({ entryPrice: 0, liquidationPrice: 0, leverage: 5 });
+  const [solPrice, setSolPrice] = useState<number>(0);
 
   const fetchCandles = useCallback(async () => {
     try {
@@ -71,9 +72,16 @@ export default function FartChart() {
           // Use the largest position (most collateral)
           const positions = data.position.positions;
           const main = positions.sort((a: any, b: any) => (b.collateral || 0) - (a.collateral || 0))[0];
+          // Lavarage prices are in FART/SOL — derive SOL/USD from collateral
+          const collSol = parseFloat(main.collateral) || 0;
+          const collUsd = parseFloat(main.collateralUsd) || 0;
+          const solUsd = collSol > 0 ? collUsd / collSol : 0;
+          if (solUsd > 0) setSolPrice(solUsd);
+          const entryRaw = parseFloat(main.entryPrice) || 0;
+          const liqRaw = parseFloat(main.liquidationPrice) || 0;
           setPosition({
-            entryPrice: parseFloat(main.entryPrice) || 0,
-            liquidationPrice: parseFloat(main.liquidationPrice) || 0,
+            entryPrice: solUsd > 0 ? entryRaw * solUsd : entryRaw,
+            liquidationPrice: solUsd > 0 ? liqRaw * solUsd : liqRaw,
             leverage: parseFloat(main.effectiveLeverage) || 5,
           });
         }
