@@ -135,10 +135,16 @@ export default function FartChart() {
     const cw = w - pad.left - pad.right;
     const ch = h - pad.top - pad.bottom;
 
-    const allPrices = visibleCandles.flatMap(c => [c.high, c.low]);
-    if (position.entryPrice > 0) allPrices.push(position.entryPrice);
-    if (position.liquidationPrice > 0) allPrices.push(position.liquidationPrice);
-    if (livePrice) allPrices.push(livePrice);
+    // Price range from candle data only
+    const candlePrices = visibleCandles.flatMap(c => [c.high, c.low]);
+    if (livePrice) candlePrices.push(livePrice);
+    const candleMin = Math.min(...candlePrices);
+    const candleMax = Math.max(...candlePrices);
+    const candleRange = candleMax - candleMin;
+    // Only include entry/liq if within 15% of candle range — prevents crushing candles
+    const allPrices = [...candlePrices];
+    if (position.entryPrice > 0 && position.entryPrice > candleMin - candleRange * 0.15 && position.entryPrice < candleMax + candleRange * 0.15) allPrices.push(position.entryPrice);
+    if (position.liquidationPrice > 0 && position.liquidationPrice > candleMin - candleRange * 0.15 && position.liquidationPrice < candleMax + candleRange * 0.15) allPrices.push(position.liquidationPrice);
     const minP = Math.min(...allPrices) * 0.998;
     const maxP = Math.max(...allPrices) * 1.002;
     const gap = cw / visibleCandles.length;
@@ -190,34 +196,56 @@ export default function FartChart() {
     // Entry line
     if (position.entryPrice > 0) {
       const y = toY(position.entryPrice);
-      ctx.beginPath();
-      ctx.setLineDash([6, 4]);
-      ctx.moveTo(pad.left, y);
-      ctx.lineTo(w - pad.right, y);
-      ctx.strokeStyle = 'rgba(102,255,102,0.6)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = '#66ff66';
-      ctx.font = 'bold 9px JetBrains Mono, monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(`ENTRY $${position.entryPrice.toFixed(4)}`, w - pad.right + 6, y - 4);
+      const inView = y >= pad.top && y <= h - pad.bottom;
+      if (inView) {
+        ctx.beginPath();
+        ctx.setLineDash([6, 4]);
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right, y);
+        ctx.strokeStyle = 'rgba(102,255,102,0.6)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#66ff66';
+        ctx.font = 'bold 9px JetBrains Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`ENTRY $${position.entryPrice.toFixed(4)}`, w - pad.right + 6, y - 4);
+      } else {
+        // Off-screen indicator
+        const edgeY = position.entryPrice > maxP ? pad.top + 2 : h - pad.bottom - 2;
+        const arrow = position.entryPrice > maxP ? '▲' : '▼';
+        ctx.fillStyle = 'rgba(102,255,102,0.5)';
+        ctx.font = '9px JetBrains Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${arrow} ENTRY $${position.entryPrice.toFixed(4)}`, w - pad.right + 6, edgeY + 3);
+      }
     }
 
     // Liquidation line
     if (position.liquidationPrice > 0) {
       const y = toY(position.liquidationPrice);
-      ctx.beginPath();
-      ctx.setLineDash([4, 4]);
-      ctx.moveTo(pad.left, y);
-      ctx.lineTo(w - pad.right, y);
-      ctx.strokeStyle = 'rgba(255,102,102,0.6)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = '#ff6666';
-      ctx.font = 'bold 9px JetBrains Mono, monospace';
-      ctx.fillText(`LIQ $${position.liquidationPrice.toFixed(4)}`, w - pad.right + 6, y - 4);
+      const inView = y >= pad.top && y <= h - pad.bottom;
+      if (inView) {
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right, y);
+        ctx.strokeStyle = 'rgba(255,102,102,0.6)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ff6666';
+        ctx.font = 'bold 9px JetBrains Mono, monospace';
+        ctx.fillText(`LIQ $${position.liquidationPrice.toFixed(4)}`, w - pad.right + 6, y - 4);
+      } else {
+        // Off-screen indicator
+        const edgeY = position.liquidationPrice > maxP ? pad.top + 2 : h - pad.bottom - 2;
+        const arrow = position.liquidationPrice > maxP ? '▲' : '▼';
+        ctx.fillStyle = 'rgba(255,102,102,0.5)';
+        ctx.font = '9px JetBrains Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${arrow} LIQ $${position.liquidationPrice.toFixed(4)}`, w - pad.right + 6, edgeY + 12);
+      }
     }
 
     // Live price line
